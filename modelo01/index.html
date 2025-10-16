@@ -15,8 +15,22 @@
         <div class="header-content">
             <div class="logo-section">
                 <i class="fas fa-hospital"></i>
-                <h1>SISCLIN Dashboard</h1>
+                <h1>SISCLIN - Financeiro</h1>
             </div>
+
+            <!-- Dashboard Navigation Switch -->
+            <div class="dashboard-switch">
+                <button class="switch-btn active" data-dashboard="financeiro">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Financeiro</span>
+                </button>
+                <button class="switch-btn" data-dashboard="fluxo-caixa">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Fluxo de Caixa</span>
+                </button>
+                <div class="switch-indicator"></div>
+            </div>
+
             <div class="header-info">
                 <span id="current-date"></span>
                 <button id="theme-toggle" class="theme-toggle" title="Alternar Tema">
@@ -35,43 +49,44 @@
         <!-- Sidebar Filters -->
         <aside class="sidebar">
             <div class="filter-section">
-                <h3><i class="fas fa-filter"></i> Filtros</h3>
+                <h3><i class="fas fa-filter"></i> Comparação de Meses</h3>
 
                 <div class="filter-group">
-                    <label for="month-filter">Mês</label>
-                    <select id="month-filter" class="filter-select">
-                        <option value="all">Todos os Meses</option>
-                        <option value="julho">Julho</option>
+                    <label for="month1-filter">Mês 1</label>
+                    <select id="month1-filter" class="filter-select">
+                        <option value="janeiro">Janeiro</option>
+                        <option value="fevereiro">Fevereiro</option>
+                        <option value="marco">Março</option>
+                        <option value="abril">Abril</option>
+                        <option value="maio">Maio</option>
+                        <option value="junho">Junho</option>
+                        <option value="julho" selected>Julho</option>
                         <option value="agosto">Agosto</option>
+                        <option value="setembro">Setembro</option>
+                        <option value="outubro">Outubro</option>
+                        <option value="novembro">Novembro</option>
+                        <option value="dezembro">Dezembro</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
-                    <label for="procedure-filter">Procedimento</label>
-                    <select id="procedure-filter" class="filter-select">
-                        <option value="all">Todos</option>
+                    <label for="month2-filter">Mês 2</label>
+                    <select id="month2-filter" class="filter-select">
+                        <option value="janeiro">Janeiro</option>
+                        <option value="fevereiro">Fevereiro</option>
+                        <option value="marco">Março</option>
+                        <option value="abril">Abril</option>
+                        <option value="maio">Maio</option>
+                        <option value="junho">Junho</option>
+                        <option value="julho">Julho</option>
+                        <option value="agosto" selected>Agosto</option>
+                        <option value="setembro">Setembro</option>
+                        <option value="outubro">Outubro</option>
+                        <option value="novembro">Novembro</option>
+                        <option value="dezembro">Dezembro</option>
                     </select>
                 </div>
-
-                <div class="filter-group">
-                    <label for="min-value">Valor Mínimo</label>
-                    <input type="number" id="min-value" class="filter-input" placeholder="R$ 0,00">
-                </div>
-
-                <div class="filter-group">
-                    <label for="max-value">Valor Máximo</label>
-                    <input type="number" id="max-value" class="filter-input" placeholder="R$ 100000,00">
-                </div>
-
-                <button class="btn-apply-filter" id="apply-filter">
-                    <i class="fas fa-check"></i> Aplicar Filtros
-                </button>
-
-                <button class="btn-clear-filter" id="clear-filter">
-                    <i class="fas fa-times"></i> Limpar Filtros
-                </button>
             </div>
-
             <div class="quick-stats">
                 <h3><i class="fas fa-chart-line"></i> Estatísticas Rápidas</h3>
                 <div class="stat-item">
@@ -79,7 +94,7 @@
                     <span class="stat-value" id="total-procedures">0</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Receita Total</span>
+                    <span class="stat-label">Faturamento Total</span>
                     <span class="stat-value" id="total-revenue">R$ 0,00</span>
                 </div>
                 <div class="stat-item">
@@ -92,48 +107,76 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- KPI Cards -->
-            <section class="kpi-section">
-                <div class="kpi-card kpi-primary">
-                    <div class="kpi-icon">
-                        <i class="fas fa-dollar-sign"></i>
+            <section class="kpi-section-wrapper">
+                <!-- Primeira Fileira - Mês 1 -->
+                <div class="kpi-row">
+                    <div class="kpi-card kpi-primary">
+                        <div class="kpi-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 id="month1-label">Faturamento Mês 1</h3>
+                            <p class="kpi-value" id="revenue-month1">R$ 0,00</p>
+                            <span class="kpi-trend" id="trend-month1"></span>
+                        </div>
                     </div>
-                    <div class="kpi-content">
-                        <h3>Receita Julho</h3>
-                        <p class="kpi-value" id="revenue-july">R$ 0,00</p>
-                        <span class="kpi-trend" id="trend-july"></span>
+
+                    <div class="kpi-card kpi-warning">
+                        <div class="kpi-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 id="expense-month1-label">Despesas Mês 1</h3>
+                            <p class="kpi-value" id="expense-month1">R$ 0,00</p>
+                            <span class="kpi-trend" id="trend-expense-month1"></span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card kpi-info">
+                        <div class="kpi-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 id="dre-month1-label">DRE Mês 1</h3>
+                            <p class="kpi-value" id="dre-month1">R$ 0,00</p>
+                            <span class="kpi-trend" id="trend-dre-month1"></span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="kpi-card kpi-success">
-                    <div class="kpi-icon">
-                        <i class="fas fa-dollar-sign"></i>
+                <!-- Segunda Fileira - Mês 2 -->
+                <div class="kpi-row">
+                    <div class="kpi-card kpi-success">
+                        <div class="kpi-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 id="month2-label">Faturamento Mês 2</h3>
+                            <p class="kpi-value" id="revenue-month2">R$ 0,00</p>
+                            <span class="kpi-trend" id="trend-month2"></span>
+                        </div>
                     </div>
-                    <div class="kpi-content">
-                        <h3>Receita Agosto</h3>
-                        <p class="kpi-value" id="revenue-august">R$ 0,00</p>
-                        <span class="kpi-trend" id="trend-august"></span>
-                    </div>
-                </div>
 
-                <div class="kpi-card kpi-info">
-                    <div class="kpi-icon">
-                        <i class="fas fa-chart-line"></i>
+                    <div class="kpi-card kpi-warning">
+                        <div class="kpi-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 id="expense-month2-label">Despesas Mês 2</h3>
+                            <p class="kpi-value" id="expense-month2">R$ 0,00</p>
+                            <span class="kpi-trend" id="trend-expense-month2"></span>
+                        </div>
                     </div>
-                    <div class="kpi-content">
-                        <h3>Variação</h3>
-                        <p class="kpi-value" id="variation-percent">0%</p>
-                        <span class="kpi-subtitle" id="variation-value">R$ 0,00</span>
-                    </div>
-                </div>
 
-                <div class="kpi-card kpi-warning">
-                    <div class="kpi-icon">
-                        <i class="fas fa-procedures"></i>
-                    </div>
-                    <div class="kpi-content">
-                        <h3>Total Procedimentos</h3>
-                        <p class="kpi-value" id="total-proc-count">0</p>
-                        <span class="kpi-subtitle">Julho + Agosto</span>
+                    <div class="kpi-card kpi-info">
+                        <div class="kpi-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 id="dre-month2-label">DRE Mês 2</h3>
+                            <p class="kpi-value" id="dre-month2">R$ 0,00</p>
+                            <span class="kpi-trend" id="trend-dre-month2"></span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -142,7 +185,7 @@
             <section class="charts-section">
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3><i class="fas fa-chart-bar"></i> Comparativo de Receita por Mês</h3>
+                        <h3><i class="fas fa-chart-bar"></i> Comparativo de Faturamento por Mês</h3>
                         <div class="chart-actions">
                             <button class="btn-icon" data-tooltip="Exportar dados">
                                 <i class="fas fa-download"></i>
@@ -172,7 +215,8 @@
             <section class="charts-section">
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3><i class="fas fa-chart-pie"></i> Top 10 Procedimentos - Agosto</h3>
+                        <h3><i class="fas fa-chart-pie"></i> <span id="top-procedures-month2-title">Top 10 Procedimentos
+                                - Mês 2</span></h3>
                         <div class="chart-actions">
                             <button class="btn-icon" data-tooltip="Exportar dados">
                                 <i class="fas fa-download"></i>
@@ -186,7 +230,8 @@
 
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3><i class="fas fa-chart-pie"></i> Top 10 Procedimentos - Julho</h3>
+                        <h3><i class="fas fa-chart-pie"></i> <span id="top-procedures-month1-title">Top 10 Procedimentos
+                                - Mês 1</span></h3>
                         <div class="chart-actions">
                             <button class="btn-icon" data-tooltip="Exportar dados">
                                 <i class="fas fa-download"></i>
@@ -220,17 +265,17 @@
                                     <th class="sortable" data-column="procedimento">
                                         Procedimento <i class="fas fa-sort"></i>
                                     </th>
-                                    <th class="sortable" data-column="qty-julho">
-                                        Qtd. Julho <i class="fas fa-sort"></i>
+                                    <th class="sortable" data-column="qty-month1">
+                                        <span id="qty-month1-header">Qtd. Mês 1</span> <i class="fas fa-sort"></i>
                                     </th>
-                                    <th class="sortable" data-column="total-julho">
-                                        Total Julho <i class="fas fa-sort"></i>
+                                    <th class="sortable" data-column="total-month1">
+                                        <span id="total-month1-header">Total Mês 1</span> <i class="fas fa-sort"></i>
                                     </th>
-                                    <th class="sortable" data-column="qty-agosto">
-                                        Qtd. Agosto <i class="fas fa-sort"></i>
+                                    <th class="sortable" data-column="qty-month2">
+                                        <span id="qty-month2-header">Qtd. Mês 2</span> <i class="fas fa-sort"></i>
                                     </th>
-                                    <th class="sortable" data-column="total-agosto">
-                                        Total Agosto <i class="fas fa-sort"></i>
+                                    <th class="sortable" data-column="total-month2">
+                                        <span id="total-month2-header">Total Mês 2</span> <i class="fas fa-sort"></i>
                                     </th>
                                     <th class="sortable" data-column="variacao">
                                         Variação <i class="fas fa-sort"></i>
@@ -257,7 +302,7 @@
                             <select id="sort-comparison" class="filter-select">
                                 <option value="variation-desc">Maior Crescimento</option>
                                 <option value="variation-asc">Maior Queda</option>
-                                <option value="total-desc">Maior Receita</option>
+                                <option value="total-desc">Maior Faturamento</option>
                             </select>
                         </div>
                     </div>
@@ -267,7 +312,7 @@
                                 <tr>
                                     <th>Procedimento</th>
                                     <th>Variação Qtd.</th>
-                                    <th>Variação Receita</th>
+                                    <th>Variação Faturamento</th>
                                     <th>% Crescimento</th>
                                     <th>Status</th>
                                 </tr>

@@ -3,6 +3,8 @@ let charts = {};
 let filteredData = null;
 let currentSort = { column: null, direction: 'asc' };
 let currentTheme = 'dark';
+let selectedMonth1 = 'julho';
+let selectedMonth2 = 'agosto';
 
 // ===== Theme Functions =====
 const initTheme = () => {
@@ -65,8 +67,8 @@ const getChartColors = () => {
 const updateChartsTheme = () => {
     // Recreate all charts with new theme colors
     createRevenueComparisonChart();
-    createTopProceduresChart('julho', 'top-procedures-july-chart');
-    createTopProceduresChart('agosto', 'top-procedures-august-chart');
+    createTopProceduresChart(selectedMonth1, 'top-procedures-july-chart');
+    createTopProceduresChart(selectedMonth2, 'top-procedures-august-chart');
     createProceduresEvolutionChart();
 };
 
@@ -90,6 +92,24 @@ const formatPercent = (value) => {
     }).format(value / 100);
 };
 
+const capitalizeMonth = (month) => {
+    const months = {
+        'janeiro': 'Janeiro',
+        'fevereiro': 'Fevereiro',
+        'marco': 'Março',
+        'abril': 'Abril',
+        'maio': 'Maio',
+        'junho': 'Junho',
+        'julho': 'Julho',
+        'agosto': 'Agosto',
+        'setembro': 'Setembro',
+        'outubro': 'Outubro',
+        'novembro': 'Novembro',
+        'dezembro': 'Dezembro'
+    };
+    return months[month] || month.charAt(0).toUpperCase() + month.slice(1);
+};
+
 const showLoading = () => {
     document.getElementById('loading-overlay').classList.add('active');
 };
@@ -109,42 +129,44 @@ const calculateTotalQuantity = (data) => {
 
 const mergeDataByProcedure = () => {
     const merged = {};
+    const month1Data = clinicData[selectedMonth1];
+    const month2Data = clinicData[selectedMonth2];
 
-    // Process julho data
-    clinicData.julho.forEach(item => {
+    // Process month1 data
+    month1Data.forEach(item => {
         merged[item.procedimento] = {
             procedimento: item.procedimento,
-            qtyJulho: item.quantidade,
-            totalJulho: item.total,
-            qtyAgosto: 0,
-            totalAgosto: 0
+            qtyMonth1: item.quantidade,
+            totalMonth1: item.total,
+            qtyMonth2: 0,
+            totalMonth2: 0
         };
     });
 
-    // Process agosto data
-    clinicData.agosto.forEach(item => {
+    // Process month2 data
+    month2Data.forEach(item => {
         if (merged[item.procedimento]) {
-            merged[item.procedimento].qtyAgosto = item.quantidade;
-            merged[item.procedimento].totalAgosto = item.total;
+            merged[item.procedimento].qtyMonth2 = item.quantidade;
+            merged[item.procedimento].totalMonth2 = item.total;
         } else {
             merged[item.procedimento] = {
                 procedimento: item.procedimento,
-                qtyJulho: 0,
-                totalJulho: 0,
-                qtyAgosto: item.quantidade,
-                totalAgosto: item.total
+                qtyMonth1: 0,
+                totalMonth1: 0,
+                qtyMonth2: item.quantidade,
+                totalMonth2: item.total
             };
         }
     });
 
     // Calculate variations
     Object.values(merged).forEach(item => {
-        item.totalGeral = item.totalJulho + item.totalAgosto;
-        item.qtyVariation = item.qtyAgosto - item.qtyJulho;
-        item.totalVariation = item.totalAgosto - item.totalJulho;
-        item.percentVariation = item.totalJulho > 0
-            ? ((item.totalAgosto - item.totalJulho) / item.totalJulho) * 100
-            : (item.totalAgosto > 0 ? 100 : 0);
+        item.totalGeral = item.totalMonth1 + item.totalMonth2;
+        item.qtyVariation = item.qtyMonth2 - item.qtyMonth1;
+        item.totalVariation = item.totalMonth2 - item.totalMonth1;
+        item.percentVariation = item.totalMonth1 > 0
+            ? ((item.totalMonth2 - item.totalMonth1) / item.totalMonth1) * 100
+            : (item.totalMonth2 > 0 ? 100 : 0);
     });
 
     return Object.values(merged);
@@ -152,31 +174,124 @@ const mergeDataByProcedure = () => {
 
 // ===== KPI Functions =====
 const updateKPIs = () => {
-    const totalJulho = calculateTotals(clinicData.julho);
-    const totalAgosto = calculateTotals(clinicData.agosto);
-    const variation = totalAgosto - totalJulho;
-    const percentVariation = (variation / totalJulho) * 100;
-    const totalProc = calculateTotalQuantity(clinicData.julho) + calculateTotalQuantity(clinicData.agosto);
+    const totalMonth1 = calculateTotals(clinicData[selectedMonth1]);
+    const totalMonth2 = calculateTotals(clinicData[selectedMonth2]);
+    const despesaMonth1 = despesasData[selectedMonth1].valor;
+    const despesaMonth2 = despesasData[selectedMonth2].valor;
+    const dreMonth1 = totalMonth1 - despesaMonth1;
+    const dreMonth2 = totalMonth2 - despesaMonth2;
 
-    document.getElementById('revenue-july').textContent = formatCurrency(totalJulho);
-    document.getElementById('revenue-august').textContent = formatCurrency(totalAgosto);
-    document.getElementById('variation-percent').textContent = formatPercent(percentVariation);
-    document.getElementById('variation-value').textContent = formatCurrency(Math.abs(variation));
-    document.getElementById('total-proc-count').textContent = formatNumber(totalProc);
+    // Calcular variações
+    const variationRevenue = totalMonth2 - totalMonth1;
+    const percentVariationRevenue = totalMonth1 > 0 ? (variationRevenue / totalMonth1) * 100 : 0;
 
-    // Update trends
-    const trendJuly = document.getElementById('trend-july');
-    const trendAugust = document.getElementById('trend-august');
+    const variationExpense = despesaMonth2 - despesaMonth1;
+    const percentVariationExpense = despesaMonth1 > 0 ? (variationExpense / despesaMonth1) * 100 : 0;
 
-    if (variation > 0) {
-        trendAugust.innerHTML = `<i class="fas fa-arrow-up"></i> +${formatPercent(percentVariation)}`;
-        trendAugust.className = 'kpi-trend trend-up';
-    } else if (variation < 0) {
-        trendAugust.innerHTML = `<i class="fas fa-arrow-down"></i> ${formatPercent(percentVariation)}`;
-        trendAugust.className = 'kpi-trend trend-down';
+    const variationDRE = dreMonth2 - dreMonth1;
+    const percentVariationDRE = dreMonth1 !== 0 ? (variationDRE / Math.abs(dreMonth1)) * 100 : 0;
+
+    const totalProc = calculateTotalQuantity(clinicData[selectedMonth1]) + calculateTotalQuantity(clinicData[selectedMonth2]);
+
+    // Atualizar labels
+    document.getElementById('month1-label').textContent = `Faturamento ${capitalizeMonth(selectedMonth1)}`;
+    document.getElementById('month2-label').textContent = `Faturamento ${capitalizeMonth(selectedMonth2)}`;
+    document.getElementById('expense-month1-label').textContent = `Despesas ${capitalizeMonth(selectedMonth1)}`;
+    document.getElementById('expense-month2-label').textContent = `Despesas ${capitalizeMonth(selectedMonth2)}`;
+    document.getElementById('dre-month1-label').textContent = `DRE ${capitalizeMonth(selectedMonth1)}`;
+    document.getElementById('dre-month2-label').textContent = `DRE ${capitalizeMonth(selectedMonth2)}`;
+
+    // Atualizar valores
+    document.getElementById('revenue-month1').textContent = formatCurrency(totalMonth1);
+    document.getElementById('revenue-month2').textContent = formatCurrency(totalMonth2);
+    document.getElementById('expense-month1').textContent = formatCurrency(despesaMonth1);
+    document.getElementById('expense-month2').textContent = formatCurrency(despesaMonth2);
+    document.getElementById('dre-month1').textContent = formatCurrency(dreMonth1);
+    document.getElementById('dre-month2').textContent = formatCurrency(dreMonth2);
+
+    // Definir cores do DRE baseado em lucro/prejuízo
+    const dreMonth1Element = document.getElementById('dre-month1');
+    const dreMonth2Element = document.getElementById('dre-month2');
+
+    dreMonth1Element.style.color = dreMonth1 >= 0 ? 'var(--secondary-color)' : 'var(--danger-color)';
+    dreMonth2Element.style.color = dreMonth2 >= 0 ? 'var(--secondary-color)' : 'var(--danger-color)';
+
+    // Update trend for Month1 Revenue (comparando com Month2)
+    const trendMonth1 = document.getElementById('trend-month1');
+    if (variationRevenue > 0) {
+        trendMonth1.innerHTML = `<i class="fas fa-arrow-down"></i> -${formatPercent(Math.abs(percentVariationRevenue))} vs ${capitalizeMonth(selectedMonth2)}`;
+        trendMonth1.className = 'kpi-trend trend-down';
+    } else if (variationRevenue < 0) {
+        trendMonth1.innerHTML = `<i class="fas fa-arrow-up"></i> +${formatPercent(Math.abs(percentVariationRevenue))} vs ${capitalizeMonth(selectedMonth2)}`;
+        trendMonth1.className = 'kpi-trend trend-up';
     } else {
-        trendAugust.innerHTML = `<i class="fas fa-minus"></i> 0%`;
-        trendAugust.className = 'kpi-trend';
+        trendMonth1.innerHTML = `<i class="fas fa-minus"></i> 0% vs ${capitalizeMonth(selectedMonth2)}`;
+        trendMonth1.className = 'kpi-trend';
+    }
+
+    // Update trend for Month2 Revenue
+    const trendMonth2 = document.getElementById('trend-month2');
+    if (variationRevenue > 0) {
+        trendMonth2.innerHTML = `<i class="fas fa-arrow-up"></i> +${formatPercent(percentVariationRevenue)} vs ${capitalizeMonth(selectedMonth1)}`;
+        trendMonth2.className = 'kpi-trend trend-up';
+    } else if (variationRevenue < 0) {
+        trendMonth2.innerHTML = `<i class="fas fa-arrow-down"></i> ${formatPercent(percentVariationRevenue)} vs ${capitalizeMonth(selectedMonth1)}`;
+        trendMonth2.className = 'kpi-trend trend-down';
+    } else {
+        trendMonth2.innerHTML = `<i class="fas fa-minus"></i> 0% vs ${capitalizeMonth(selectedMonth1)}`;
+        trendMonth2.className = 'kpi-trend';
+    }
+
+    // Update trend for Expense Month1
+    const trendExpenseMonth1 = document.getElementById('trend-expense-month1');
+    if (variationExpense > 0) {
+        trendExpenseMonth1.innerHTML = `<i class="fas fa-arrow-down"></i> -${formatPercent(Math.abs(percentVariationExpense))} vs ${capitalizeMonth(selectedMonth2)}`;
+        trendExpenseMonth1.className = 'kpi-trend trend-up'; // Menor despesa é bom
+    } else if (variationExpense < 0) {
+        trendExpenseMonth1.innerHTML = `<i class="fas fa-arrow-up"></i> +${formatPercent(Math.abs(percentVariationExpense))} vs ${capitalizeMonth(selectedMonth2)}`;
+        trendExpenseMonth1.className = 'kpi-trend trend-down'; // Maior despesa é ruim
+    } else {
+        trendExpenseMonth1.innerHTML = `<i class="fas fa-minus"></i> 0% vs ${capitalizeMonth(selectedMonth2)}`;
+        trendExpenseMonth1.className = 'kpi-trend';
+    }
+
+    // Update trend for Expense Month2
+    const trendExpenseMonth2 = document.getElementById('trend-expense-month2');
+    if (variationExpense > 0) {
+        trendExpenseMonth2.innerHTML = `<i class="fas fa-arrow-up"></i> +${formatPercent(percentVariationExpense)} vs ${capitalizeMonth(selectedMonth1)}`;
+        trendExpenseMonth2.className = 'kpi-trend trend-down'; // Maior despesa é ruim
+    } else if (variationExpense < 0) {
+        trendExpenseMonth2.innerHTML = `<i class="fas fa-arrow-down"></i> ${formatPercent(percentVariationExpense)} vs ${capitalizeMonth(selectedMonth1)}`;
+        trendExpenseMonth2.className = 'kpi-trend trend-up'; // Menor despesa é bom
+    } else {
+        trendExpenseMonth2.innerHTML = `<i class="fas fa-minus"></i> 0% vs ${capitalizeMonth(selectedMonth1)}`;
+        trendExpenseMonth2.className = 'kpi-trend';
+    }
+
+    // Update trend for DRE Month1
+    const trendDREMonth1 = document.getElementById('trend-dre-month1');
+    if (variationDRE > 0) {
+        trendDREMonth1.innerHTML = `<i class="fas fa-arrow-down"></i> -${formatPercent(Math.abs(percentVariationDRE))} vs ${capitalizeMonth(selectedMonth2)}`;
+        trendDREMonth1.className = 'kpi-trend trend-down';
+    } else if (variationDRE < 0) {
+        trendDREMonth1.innerHTML = `<i class="fas fa-arrow-up"></i> +${formatPercent(Math.abs(percentVariationDRE))} vs ${capitalizeMonth(selectedMonth2)}`;
+        trendDREMonth1.className = 'kpi-trend trend-up';
+    } else {
+        trendDREMonth1.innerHTML = `<i class="fas fa-minus"></i> 0% vs ${capitalizeMonth(selectedMonth2)}`;
+        trendDREMonth1.className = 'kpi-trend';
+    }
+
+    // Update trend for DRE Month2
+    const trendDREMonth2 = document.getElementById('trend-dre-month2');
+    if (variationDRE > 0) {
+        trendDREMonth2.innerHTML = `<i class="fas fa-arrow-up"></i> +${formatPercent(percentVariationDRE)} vs ${capitalizeMonth(selectedMonth1)}`;
+        trendDREMonth2.className = 'kpi-trend trend-up';
+    } else if (variationDRE < 0) {
+        trendDREMonth2.innerHTML = `<i class="fas fa-arrow-down"></i> ${formatPercent(percentVariationDRE)} vs ${capitalizeMonth(selectedMonth1)}`;
+        trendDREMonth2.className = 'kpi-trend trend-down';
+    } else {
+        trendDREMonth2.innerHTML = `<i class="fas fa-minus"></i> 0% vs ${capitalizeMonth(selectedMonth1)}`;
+        trendDREMonth2.className = 'kpi-trend';
     }
 };
 
@@ -189,16 +304,16 @@ const createRevenueComparisonChart = () => {
         charts.revenueComparison.destroy();
     }
 
-    const totalJulho = calculateTotals(clinicData.julho);
-    const totalAgosto = calculateTotals(clinicData.agosto);
+    const totalMonth1 = calculateTotals(clinicData[selectedMonth1]);
+    const totalMonth2 = calculateTotals(clinicData[selectedMonth2]);
 
     charts.revenueComparison = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Julho', 'Agosto'],
+            labels: [capitalizeMonth(selectedMonth1), capitalizeMonth(selectedMonth2)],
             datasets: [{
                 label: 'Receita Total',
-                data: [totalJulho, totalAgosto],
+                data: [totalMonth1, totalMonth2],
                 backgroundColor: [
                     'rgba(37, 99, 235, 0.8)',
                     'rgba(16, 185, 129, 0.8)'
@@ -263,7 +378,7 @@ const createRevenueComparisonChart = () => {
         charts[chartKey].destroy();
     }
 
-    const data = month === 'julho' ? clinicData.julho : clinicData.agosto;
+    const data = clinicData[month];
     const sorted = [...data].sort((a, b) => b.total - a.total).slice(0, 10);
 
     const colors = [
@@ -346,16 +461,16 @@ const createProceduresEvolutionChart = () => {
 
     const datasets = [
         {
-            label: 'Julho',
-            data: top10.map(item => item.qtyJulho),
+            label: capitalizeMonth(selectedMonth1),
+            data: top10.map(item => item.qtyMonth1),
             backgroundColor: 'rgba(37, 99, 235, 0.7)',
             borderColor: 'rgba(37, 99, 235, 1)',
             borderWidth: 2,
             borderRadius: 6
         },
         {
-            label: 'Agosto',
-            data: top10.map(item => item.qtyAgosto),
+            label: capitalizeMonth(selectedMonth2),
+            data: top10.map(item => item.qtyMonth2),
             backgroundColor: 'rgba(16, 185, 129, 0.7)',
             borderColor: 'rgba(16, 185, 129, 1)',
             borderWidth: 2,
@@ -400,8 +515,8 @@ const createProceduresEvolutionChart = () => {
                             const item = top10[index];
                             return [
                                 '',
-                                `Receita Julho: ${formatCurrency(item.totalJulho)}`,
-                                `Receita Agosto: ${formatCurrency(item.totalAgosto)}`,
+                                `Receita ${capitalizeMonth(selectedMonth1)}: ${formatCurrency(item.totalMonth1)}`,
+                                `Receita ${capitalizeMonth(selectedMonth2)}: ${formatCurrency(item.totalMonth2)}`,
                                 `Variação: ${item.percentVariation >= 0 ? '+' : ''}${item.percentVariation.toFixed(1)}%`
                             ];
                         }
@@ -451,10 +566,10 @@ const renderProceduresTable = (data = null) => {
 
         row.innerHTML = `
             <td><strong>${item.procedimento}</strong></td>
-            <td class="text-center">${formatNumber(item.qtyJulho)}</td>
-            <td class="text-primary">${formatCurrency(item.totalJulho)}</td>
-            <td class="text-center">${formatNumber(item.qtyAgosto)}</td>
-            <td class="text-secondary">${formatCurrency(item.totalAgosto)}</td>
+            <td class="text-center">${formatNumber(item.qtyMonth1)}</td>
+            <td class="text-primary">${formatCurrency(item.totalMonth1)}</td>
+            <td class="text-center">${formatNumber(item.qtyMonth2)}</td>
+            <td class="text-secondary">${formatCurrency(item.totalMonth2)}</td>
             <td>
                 <span class="trend-badge ${variationClass}">
                     <i class="fas ${variationIcon}"></i>
@@ -514,45 +629,6 @@ const renderComparisonTable = (data = null) => {
     });
 };
 
-// ===== Filter Functions =====
-const applyFilters = () => {
-    const monthFilter = document.getElementById('month-filter').value;
-    const procedureFilter = document.getElementById('procedure-filter').value;
-    const minValue = parseFloat(document.getElementById('min-value').value) || 0;
-    const maxValue = parseFloat(document.getElementById('max-value').value) || Infinity;
-
-    let merged = mergeDataByProcedure();
-
-    // Apply procedure filter
-    if (procedureFilter !== 'all') {
-        merged = merged.filter(item => item.procedimento === procedureFilter);
-    }
-
-    // Apply value filters
-    merged = merged.filter(item => {
-        const total = item.totalGeral;
-        return total >= minValue && total <= maxValue;
-    });
-
-    // Update tables
-    renderProceduresTable(merged);
-    renderComparisonTable(merged);
-
-    // Update quick stats
-    updateQuickStats(merged);
-};
-
-const clearFilters = () => {
-    document.getElementById('month-filter').value = 'all';
-    document.getElementById('procedure-filter').value = 'all';
-    document.getElementById('min-value').value = '';
-    document.getElementById('max-value').value = '';
-
-    renderProceduresTable();
-    renderComparisonTable();
-    updateQuickStats();
-};
-
 // ===== Search Function =====
 const searchTable = (query) => {
     const merged = mergeDataByProcedure();
@@ -582,21 +658,21 @@ const sortTable = (column) => {
                 valueA = a.procedimento;
                 valueB = b.procedimento;
                 break;
-            case 'qty-julho':
-                valueA = a.qtyJulho;
-                valueB = b.qtyJulho;
+            case 'qty-month1':
+                valueA = a.qtyMonth1;
+                valueB = b.qtyMonth1;
                 break;
-            case 'total-julho':
-                valueA = a.totalJulho;
-                valueB = b.totalJulho;
+            case 'total-month1':
+                valueA = a.totalMonth1;
+                valueB = b.totalMonth1;
                 break;
-            case 'qty-agosto':
-                valueA = a.qtyAgosto;
-                valueB = b.qtyAgosto;
+            case 'qty-month2':
+                valueA = a.qtyMonth2;
+                valueB = b.qtyMonth2;
                 break;
-            case 'total-agosto':
-                valueA = a.totalAgosto;
-                valueB = b.totalAgosto;
+            case 'total-month2':
+                valueA = a.totalMonth2;
+                valueB = b.totalMonth2;
                 break;
             case 'variacao':
                 valueA = a.percentVariation;
@@ -639,7 +715,7 @@ const updateQuickStats = (data = null) => {
     const tableData = data || mergeDataByProcedure();
 
     const totalProcedures = tableData.reduce((sum, item) =>
-        sum + item.qtyJulho + item.qtyAgosto, 0
+        sum + item.qtyMonth1 + item.qtyMonth2, 0
     );
 
     const totalRevenue = tableData.reduce((sum, item) =>
@@ -657,10 +733,10 @@ const updateQuickStats = (data = null) => {
 const exportToCSV = () => {
     const merged = mergeDataByProcedure();
 
-    let csv = 'Procedimento,Qtd Julho,Total Julho,Qtd Agosto,Total Agosto,Variação %,Total Geral\n';
+    let csv = `Procedimento,Qtd ${capitalizeMonth(selectedMonth1)},Total ${capitalizeMonth(selectedMonth1)},Qtd ${capitalizeMonth(selectedMonth2)},Total ${capitalizeMonth(selectedMonth2)},Variação %,Total Geral\n`;
 
     merged.forEach(item => {
-        csv += `"${item.procedimento}",${item.qtyJulho},${item.totalJulho},${item.qtyAgosto},${item.totalAgosto},${item.percentVariation.toFixed(2)},${item.totalGeral}\n`;
+        csv += `"${item.procedimento}",${item.qtyMonth1},${item.totalMonth1},${item.qtyMonth2},${item.totalMonth2},${item.percentVariation.toFixed(2)},${item.totalGeral}\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -676,22 +752,38 @@ const exportToCSV = () => {
     document.body.removeChild(link);
 };
 
-// ===== Populate Procedure Filter =====
-const populateProcedureFilter = () => {
-    const select = document.getElementById('procedure-filter');
-    const procedures = new Set();
+// ===== Update Dynamic Labels =====
+const updateDynamicLabels = () => {
+    // Atualizar títulos dos gráficos
+    document.getElementById('top-procedures-month1-title').textContent = `Top 10 Procedimentos - ${capitalizeMonth(selectedMonth1)}`;
+    document.getElementById('top-procedures-month2-title').textContent = `Top 10 Procedimentos - ${capitalizeMonth(selectedMonth2)}`;
 
-    clinicData.julho.forEach(item => procedures.add(item.procedimento));
-    clinicData.agosto.forEach(item => procedures.add(item.procedimento));
+    // Atualizar headers da tabela
+    document.getElementById('qty-month1-header').textContent = `Qtd. ${capitalizeMonth(selectedMonth1)}`;
+    document.getElementById('total-month1-header').textContent = `Total ${capitalizeMonth(selectedMonth1)}`;
+    document.getElementById('qty-month2-header').textContent = `Qtd. ${capitalizeMonth(selectedMonth2)}`;
+    document.getElementById('total-month2-header').textContent = `Total ${capitalizeMonth(selectedMonth2)}`;
+};
 
-    const sorted = Array.from(procedures).sort();
+// ===== Update Dashboard on Month Change =====
+const updateDashboard = () => {
+    showLoading();
 
-    sorted.forEach(proc => {
-        const option = document.createElement('option');
-        option.value = proc;
-        option.textContent = proc;
-        select.appendChild(option);
-    });
+    updateDynamicLabels();
+    updateKPIs();
+    updateQuickStats();
+
+    setTimeout(() => {
+        createRevenueComparisonChart();
+        createTopProceduresChart(selectedMonth1, 'top-procedures-july-chart');
+        createTopProceduresChart(selectedMonth2, 'top-procedures-august-chart');
+        createProceduresEvolutionChart();
+
+        renderProceduresTable();
+        renderComparisonTable();
+
+        hideLoading();
+    }, 300);
 };
 
 // ===== Sort Comparison Table =====
@@ -732,8 +824,8 @@ const initDashboard = () => {
         day: 'numeric'
     });
 
-    // Populate filters
-    populateProcedureFilter();
+    // Update dynamic labels
+    updateDynamicLabels();
 
     // Update KPIs
     updateKPIs();
@@ -744,8 +836,8 @@ const initDashboard = () => {
     // Create charts
     setTimeout(() => {
         createRevenueComparisonChart();
-        createTopProceduresChart('julho', 'top-procedures-july-chart');
-        createTopProceduresChart('agosto', 'top-procedures-august-chart');
+        createTopProceduresChart(selectedMonth1, 'top-procedures-july-chart');
+        createTopProceduresChart(selectedMonth2, 'top-procedures-august-chart');
         createProceduresEvolutionChart();
 
         // Render tables
@@ -763,9 +855,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme toggle
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
-    // Filter buttons
-    document.getElementById('apply-filter').addEventListener('click', applyFilters);
-    document.getElementById('clear-filter').addEventListener('click', clearFilters);
+    // Month selectors
+    document.getElementById('month1-filter').addEventListener('change', (e) => {
+        selectedMonth1 = e.target.value;
+        updateDashboard();
+    });
+
+    document.getElementById('month2-filter').addEventListener('change', (e) => {
+        selectedMonth2 = e.target.value;
+        updateDashboard();
+    });
 
     // Search
     document.getElementById('search-table').addEventListener('input', (e) => {
@@ -787,7 +886,39 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sort-comparison').addEventListener('change', (e) => {
         sortComparisonTable(e.target.value);
     });
+
+    // Dashboard Navigation
+    initDashboardNavigation();
 });
+
+// ===== Dashboard Navigation =====
+const initDashboardNavigation = () => {
+    const switchButtons = document.querySelectorAll('.switch-btn');
+
+    switchButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const dashboard = btn.getAttribute('data-dashboard');
+            navigateToDashboard(dashboard);
+        });
+    });
+};
+
+const navigateToDashboard = (dashboard) => {
+    const currentPath = window.location.pathname;
+    let newPath = '';
+
+    if (dashboard === 'financeiro') {
+        // Navegar para modelo01
+        newPath = currentPath.replace('/modelo04/', '/modelo01/');
+    } else if (dashboard === 'fluxo-caixa') {
+        // Navegar para modelo04
+        newPath = currentPath.replace('/modelo01/', '/modelo04/');
+    }
+
+    if (newPath && newPath !== currentPath) {
+        window.location.href = newPath;
+    }
+};
 
 // ===== Responsive Charts =====
 window.addEventListener('resize', () => {

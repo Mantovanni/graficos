@@ -93,7 +93,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--spacing-lg);
 }
 
 .logo-section {
@@ -121,84 +120,6 @@ body {
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
-}
-
-/* ===== Dashboard Navigation Switch ===== */
-.dashboard-switch {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    background: var(--dark-bg);
-    padding: 0.25rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-    position: relative;
-}
-
-.switch-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-md);
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-md);
-    color: var(--gray-text);
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    position: relative;
-    z-index: 2;
-    white-space: nowrap;
-}
-
-.switch-btn i {
-    font-size: 1rem;
-}
-
-.switch-btn:hover {
-    color: var(--light-text);
-}
-
-.switch-btn.active {
-    color: white;
-}
-
-.switch-indicator {
-    position: absolute;
-    top: 0.25rem;
-    left: 0.25rem;
-    height: calc(100% - 0.5rem);
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    border-radius: var(--radius-md);
-    transition: all var(--transition-base);
-    z-index: 1;
-    box-shadow: var(--shadow-md);
-}
-
-/* Ajustar o indicador baseado no botão ativo */
-.switch-btn:first-of-type.active~.switch-indicator {
-    width: calc(50% - 0.25rem);
-    transform: translateX(0);
-}
-
-.switch-btn:last-of-type.active~.switch-indicator {
-    width: calc(50% - 0.25rem);
-    transform: translateX(100%);
-}
-
-/* Responsive do switch */
-@media (max-width: 768px) {
-    .dashboard-switch {
-        order: 3;
-        width: 100%;
-        margin-top: var(--spacing-sm);
-    }
-
-    .switch-btn span {
-        font-size: 0.75rem;
-    }
 }
 
 .user-info {
@@ -408,15 +329,9 @@ body.light-theme .theme-toggle:hover {
 }
 
 /* ===== KPI Cards ===== */
-.kpi-section-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.kpi-row {
+.kpi-section {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-md);
 }
 
@@ -470,6 +385,10 @@ body.light-theme .theme-toggle:hover {
     background: var(--warning-color);
 }
 
+.kpi-danger::before {
+    background: var(--danger-color);
+}
+
 .kpi-icon {
     width: 60px;
     height: 60px;
@@ -501,6 +420,11 @@ body.light-theme .theme-toggle:hover {
     color: var(--warning-color);
 }
 
+.kpi-danger .kpi-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
 .kpi-content {
     flex: 1;
 }
@@ -525,6 +449,7 @@ body.light-theme .theme-toggle:hover {
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    color: var(--gray-text);
 }
 
 .trend-up {
@@ -548,6 +473,10 @@ body.light-theme .theme-toggle:hover {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-md);
     overflow: hidden;
+}
+
+.chart-large {
+    grid-column: 1 / -1;
 }
 
 .chart-header {
@@ -756,19 +685,13 @@ tbody tr:hover {
     text-transform: uppercase;
 }
 
-.status-growth {
+.status-realizado {
     background: rgba(16, 185, 129, 0.1);
     color: var(--secondary-color);
     border: 1px solid var(--secondary-color);
 }
 
-.status-decline {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger-color);
-    border: 1px solid var(--danger-color);
-}
-
-.status-stable {
+.status-pendente {
     background: rgba(245, 158, 11, 0.1);
     color: var(--warning-color);
     border: 1px solid var(--warning-color);
@@ -854,10 +777,6 @@ tbody tr:hover {
     .charts-section {
         grid-template-columns: 1fr;
     }
-
-    .kpi-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 @media (max-width: 1024px) {
@@ -872,10 +791,6 @@ tbody tr:hover {
     .main-content {
         order: 1;
     }
-
-    .kpi-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 @media (max-width: 768px) {
@@ -884,7 +799,7 @@ tbody tr:hover {
         gap: var(--spacing-sm);
     }
 
-    .kpi-row {
+    .kpi-section {
         grid-template-columns: 1fr;
     }
 
@@ -998,6 +913,14 @@ tbody tr:hover {
     font-size: 1.5rem;
 }
 
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
 /* ===== Light Theme Specific Adjustments ===== */
 body.light-theme .dashboard-header {
     background: var(--dark-card);
@@ -1044,4 +967,180 @@ tbody tr {
         color var(--transition-base),
         border-color var(--transition-base),
         box-shadow var(--transition-base);
+}
+/* ===== Filter Buttons ===== */
+.filter-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: var(--dark-card);
+    color: var(--gray-text);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: left;
+}
+
+.filter-btn:hover {
+    background: var(--dark-hover);
+    border-color: var(--primary-color);
+    color: var(--light-text);
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+body.light-theme .filter-btn {
+    background: white;
+    color: #64748b;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .filter-btn:hover {
+    background: #f8fafc;
+    border-color: var(--primary-color);
+    color: #0f172a;
+}
+
+body.light-theme .filter-btn.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+}
+
+/* ===== Filter Info Box ===== */
+.filter-info {
+    background: var(--dark-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-top: 1.5rem;
+}
+
+.filter-info h4 {
+    color: var(--light-text);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-info h4 i {
+    color: var(--info-color);
+}
+
+.filter-info p {
+    color: var(--gray-text);
+    font-size: 0.8125rem;
+    margin-bottom: 0.5rem;
+}
+
+.filter-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.filter-info ul li {
+    color: var(--gray-text);
+    font-size: 0.8125rem;
+    padding: 0.25rem 0;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.filter-info ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.filter-info ul li strong {
+    color: var(--light-text);
+}
+
+body.light-theme .filter-info {
+    background: white;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .filter-info h4 {
+    color: #0f172a;
+}
+
+body.light-theme .filter-info p,
+body.light-theme .filter-info ul li {
+    color: #64748b;
+}
+
+body.light-theme .filter-info ul li strong {
+    color: #0f172a;
+}
+
+/* ===== Action Buttons ===== */
+.action-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--secondary-color), #059669);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.action-btn i {
+    font-size: 1rem;
+}
+
+/* ===== Status Badges ===== */
+.status {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-realizado {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-pendente {
+    background: rgba(251, 146, 60, 0.1);
+    color: #fb923c;
+    border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+body.light-theme .status-realizado {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+body.light-theme .status-pendente {
+    background: rgba(251, 146, 60, 0.15);
+    color: #ea580c;
 }

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro - Análise de Receitas e Despesas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-chart-line"></i>
+                <h1>Dashboard Financeiro</h1>
+            </div>
+            <div class="header-info">
+                <span id="current-date"></span>
+                <button id="theme-toggle" class="theme-toggle" title="Alternar Tema">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Administrador</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="filter-section">
+                <h3><i class="fas fa-filter"></i> Filtros</h3>
+
+                <div class="filter-group">
+                    <label for="month-filter">Período</label>
+                    <select id="month-filter" class="filter-select">
+                        <option value="all">Ambos os Meses</option>
+                        <option value="julho">Julho</option>
+                        <option value="agosto">Agosto</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="convenio-filter">Convênio</label>
+                    <select id="convenio-filter" class="filter-select">
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="status-filter">Status</label>
+                    <select id="status-filter" class="filter-select">
+                        <option value="all">Todos</option>
+                        <option value="Realizado">Realizado</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
+
+                <button class="btn-apply-filter" id="apply-filter">
+                    <i class="fas fa-check"></i> Aplicar Filtros
+                </button>
+
+                <button class="btn-clear-filter" id="clear-filter">
+                    <i class="fas fa-times"></i> Limpar Filtros
+                </button>
+            </div>
+
+            <div class="quick-stats">
+                <h3><i class="fas fa-info-circle"></i> Resumo Rápido</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Lucro Julho</span>
+                    <span class="stat-value text-success" id="profit-july">R$ 0,00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Lucro Agosto</span>
+                    <span class="stat-value text-success" id="profit-august">R$ 0,00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Margem Média</span>
+                    <span class="stat-value" id="avg-margin">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Impostos</span>
+                    <span class="stat-value text-warning" id="total-taxes">R$ 0,00</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- KPI Cards -->
+            <section class="kpi-section">
+                <div class="kpi-card kpi-primary">
+                    <div class="kpi-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Receitas Julho</h3>
+                        <p class="kpi-value" id="revenue-july">R$ 0,00</p>
+                        <span class="kpi-subtitle">Valores recebidos</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-success">
+                    <div class="kpi-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Receitas Agosto</h3>
+                        <p class="kpi-value" id="revenue-august">R$ 0,00</p>
+                        <span class="kpi-subtitle">Valores recebidos</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-danger">
+                    <div class="kpi-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Despesas Totais</h3>
+                        <p class="kpi-value" id="total-expenses">R$ 0,00</p>
+                        <span class="kpi-subtitle">Julho + Agosto</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-info">
+                    <div class="kpi-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Lucro Líquido</h3>
+                        <p class="kpi-value" id="net-profit">R$ 0,00</p>
+                        <span class="kpi-subtitle" id="profit-margin">Margem: 0%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section - Row 1 -->
+            <section class="charts-section">
+                <div class="chart-container chart-large">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Receitas vs Despesas por Mês</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="revenue-expense-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Distribuição por Convênio</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="convenio-distribution-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section - Row 2 -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-percentage"></i> Análise de Margem</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="margin-analysis-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-coins"></i> Fluxo de Caixa</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="cashflow-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section - Row 3 -->
+            <section class="charts-section">
+                <div class="chart-container chart-large">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-receipt"></i> Impacto de Impostos por Convênio</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="tax-impact-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Receitas por Mês de Recebimento</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="monthly-receipt-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tables Section -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-table"></i> Detalhamento de Receitas por Convênio</h3>
+                        <div class="table-actions">
+                            <input type="text" id="search-table" class="search-input" placeholder="Buscar...">
+                            <button class="btn-icon" id="export-csv" data-tooltip="Exportar CSV">
+                                <i class="fas fa-file-csv"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="receitas-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-column="convenio">
+                                        Convênio <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="mes">
+                                        Mês Origem <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="faturamento">
+                                        Faturamento <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="impostos">
+                                        Impostos <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="liquido">
+                                        Valor Líquido <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="recebimento">
+                                        Data Recebimento <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receitas-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comparison Table -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-handshake"></i> Análise Consolidada por Convênio</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="convenio-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Convênio</th>
+                                    <th>Total Faturado</th>
+                                    <th>Total Impostos</th>
+                                    <th>Total Recebido</th>
+                                    <th>% Impostos</th>
+                                    <th>Nº Transações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="convenio-summary-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Financial Summary -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-calculator"></i> Demonstrativo de Resultados (DRE)</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="dre-table">
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Julho 2025</th>
+                                    <th>Agosto 2025</th>
+                                    <th>Total Período</th>
+                                    <th>Variação %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dre-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Carregando dados financeiros...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

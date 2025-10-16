@@ -1,5 +1,11 @@
-// Dados financeiros da clínica - Julho e Agosto
+// Dados financeiros da clínica - Todos os meses
 const clinicData = {
+    janeiro: [],
+    fevereiro: [],
+    marco: [],
+    abril: [],
+    maio: [],
+    junho: [],
     julho: [
         { procedimento: "COLONOSCOPIA", quantidade: 13, total: 20850.00 },
         { procedimento: "COLONOSCOPIA COM POLIPECTOMIA", quantidade: 9, total: 19900.00 },
@@ -33,7 +39,27 @@ const clinicData = {
         { procedimento: "POLIPECTOMIA DO COLON UNIMED", quantidade: 24, total: 32287.92 },
         { procedimento: "POLIPOS EDA PARTICULAR", quantidade: 9, total: 1800.00 },
         { procedimento: "TESTE RESPIRATÓRIO", quantidade: 13, total: 4000.00 }
-    ]
+    ],
+    setembro: [],
+    outubro: [],
+    novembro: [],
+    dezembro: []
+};
+
+// Dados de despesas por mês
+const despesasData = {
+    janeiro: { categoria: "Geral", valor: 0, mes: "Janeiro" },
+    fevereiro: { categoria: "Geral", valor: 0, mes: "Fevereiro" },
+    marco: { categoria: "Geral", valor: 0, mes: "Março" },
+    abril: { categoria: "Geral", valor: 0, mes: "Abril" },
+    maio: { categoria: "Geral", valor: 0, mes: "Maio" },
+    junho: { categoria: "Geral", valor: 0, mes: "Junho" },
+    julho: { categoria: "Geral", valor: 51632.96, mes: "Julho" },
+    agosto: { categoria: "Geral", valor: 41336.52, mes: "Agosto" },
+    setembro: { categoria: "Geral", valor: 0, mes: "Setembro" },
+    outubro: { categoria: "Geral", valor: 0, mes: "Outubro" },
+    novembro: { categoria: "Geral", valor: 0, mes: "Novembro" },
+    dezembro: { categoria: "Geral", valor: 0, mes: "Dezembro" }
 };
 
 // Exportar dados para uso global

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Fluxo de Caixa - Clínica Médica</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-money-bill-wave"></i>
+                <h1>Fluxo de Caixa</h1>
+            </div>
+            <div class="header-info">
+                <span id="current-date"></span>
+                <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" title="Alternar Tema">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Administrador</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="filter-section">
+                <h3><i class="fas fa-calendar-alt"></i> Filtro por Mês</h3>
+
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="changeMonth('Todos')">Todos</button>
+                    <button class="filter-btn" onclick="changeMonth('Maio')">Maio</button>
+                    <button class="filter-btn" onclick="changeMonth('Junho')">Junho</button>
+                    <button class="filter-btn" onclick="changeMonth('Julho')">Julho</button>
+                    <button class="filter-btn" onclick="changeMonth('Agosto')">Agosto</button>
+                    <button class="filter-btn" onclick="changeMonth('Setembro')">Setembro</button>
+                    <button class="filter-btn" onclick="changeMonth('Outubro')">Outubro</button>
+                </div>
+
+                <div class="filter-info">
+                    <h4><i class="fas fa-info-circle"></i> Sobre o Fluxo de Caixa</h4>
+                    <p>Este dashboard mostra:</p>
+                    <ul>
+                        <li><strong>Realizado:</strong> O que foi recebido e pago</li>
+                        <li><strong>Pendente:</strong> O que está para receber e pagar</li>
+                        <li><strong>Projeção:</strong> Realizado + Pendente</li>
+                    </ul>
+                </div>
+
+                <div class="quick-actions">
+                    <h4><i class="fas fa-bolt"></i> Ações Rápidas</h4>
+                    <button class="action-btn" onclick="exportToCSV('receitas-table', 'receitas.csv')">
+                        <i class="fas fa-file-export"></i> Exportar Receitas
+                    </button>
+                    <button class="action-btn" onclick="exportToCSV('despesas-table', 'despesas.csv')">
+                        <i class="fas fa-file-export"></i> Exportar Despesas
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- KPIs Section -->
+            <section class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="kpi-info">
+                        <p class="kpi-label">Entradas Realizadas</p>
+                        <h2 class="kpi-value" id="kpi-receitas">R$ 0,00</h2>
+                        <span class="kpi-subtitle">Valores efetivamente recebidos</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="kpi-info">
+                        <p class="kpi-label">Saídas Realizadas</p>
+                        <h2 class="kpi-value" id="kpi-despesas">R$ 0,00</h2>
+                        <span class="kpi-subtitle">Valores efetivamente pagos</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <i class="fas fa-equals"></i>
+                    </div>
+                    <div class="kpi-info">
+                        <p class="kpi-label">Saldo Realizado</p>
+                        <h2 class="kpi-value" id="kpi-saldo">R$ 0,00</h2>
+                        <span class="kpi-subtitle">Entradas - Saídas</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="kpi-info">
+                        <p class="kpi-label">Saldo Projetado</p>
+                        <h2 class="kpi-value" id="kpi-projecao">R$ 0,00</h2>
+                        <span class="kpi-subtitle">Realizado + Pendente</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Grid -->
+            <section class="charts-grid">
+                <!-- Fluxo de Caixa -->
+                <div class="chart-card span-2">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Fluxo de Caixa Mensal</h3>
+                        <span class="chart-subtitle">Entradas vs Saídas vs Saldo</span>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="cashflow-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Comparação Mensal -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Evolução do Saldo</h3>
+                        <span class="chart-subtitle">Saldo mensal ao longo do tempo</span>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="monthly-comparison-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Projeções -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-calendar-check"></i> Realizado vs Pendente</h3>
+                        <span class="chart-subtitle">Saldos realizados e pendentes por mês</span>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="projections-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribuição por Convênio -->
+                <div class="chart-card span-2">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Distribuição por Convênio</h3>
+                        <span class="chart-subtitle">Receitas realizadas por convênio</span>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="convenio-distribution-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tables Section -->
+            <section class="tables-section">
+                <!-- Receitas Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div>
+                            <h3><i class="fas fa-table"></i> Receitas Detalhadas</h3>
+                            <span class="table-subtitle">Todas as entradas do período selecionado</span>
+                        </div>
+                        <button class="export-btn" onclick="exportToCSV('receitas-table', 'receitas.csv')">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="receitas-table">
+                            <thead>
+                                <tr>
+                                    <th>Convênio</th>
+                                    <th>Faturamento</th>
+                                    <th>Impostos</th>
+                                    <th>Valor Líquido</th>
+                                    <th>Vencimento</th>
+                                    <th>Recebimento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receitas-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Despesas Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div>
+                            <h3><i class="fas fa-table"></i> Despesas Detalhadas</h3>
+                            <span class="table-subtitle">Todas as saídas do período</span>
+                        </div>
+                        <button class="export-btn" onclick="exportToCSV('despesas-table', 'despesas.csv')">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="despesas-table">
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Valor</th>
+                                    <th>Vencimento</th>
+                                    <th>Pagamento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="despesas-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Set current date -->
+    <script>
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+
+</html>

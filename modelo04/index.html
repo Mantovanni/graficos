@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Fluxo de Caixa - SISCLIN</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-cash-register"></i>
+                <h1>SISCLIN - Fluxo de Caixa</h1>
+            </div>
+
+            <!-- Dashboard Navigation Switch -->
+            <div class="dashboard-switch">
+                <button class="switch-btn" data-dashboard="financeiro">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Financeiro</span>
+                </button>
+                <button class="switch-btn active" data-dashboard="fluxo-caixa">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Fluxo de Caixa</span>
+                </button>
+                <div class="switch-indicator"></div>
+            </div>
+
+            <div class="header-info">
+                <span id="current-date"></span>
+                <button id="theme-toggle" class="theme-toggle" title="Alternar Tema">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="filter-section">
+                <h3><i class="fas fa-filter"></i> Filtros</h3>
+
+                <div class="filter-group">
+                    <label for="month-filter">Mês/Ano</label>
+                    <select id="month-filter" class="filter-select">
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="convenio-filter">Convênio</label>
+                    <select id="convenio-filter" class="filter-select">
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="status-filter">Status</label>
+                    <select id="status-filter" class="filter-select">
+                        <option value="all">Todos</option>
+                        <option value="Realizado">Realizado</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
+
+                <button class="btn-apply-filter" id="apply-filter">
+                    <i class="fas fa-check"></i> Aplicar Filtros
+                </button>
+
+                <button class="btn-clear-filter" id="clear-filter">
+                    <i class="fas fa-times"></i> Limpar Filtros
+                </button>
+            </div>
+
+            <div class="quick-stats">
+                <h3><i class="fas fa-chart-line"></i> Resumo Geral</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Total Entradas</span>
+                    <span class="stat-value text-success" id="total-entradas">R$ 0,00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Saídas</span>
+                    <span class="stat-value text-danger" id="total-saidas">R$ 0,00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Saldo</span>
+                    <span class="stat-value" id="saldo-geral">R$ 0,00</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- KPI Cards -->
+            <section class="kpi-section">
+                <div class="kpi-card kpi-success">
+                    <div class="kpi-icon">
+                        <i class="fas fa-arrow-circle-down"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 id="entradas-titulo">Entradas do Mês</h3>
+                        <p class="kpi-value" id="entradas-mes">R$ 0,00</p>
+                        <span class="kpi-subtitle" id="entradas-mes-count">0 lançamentos</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-danger">
+                    <div class="kpi-icon">
+                        <i class="fas fa-arrow-circle-up"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 id="saidas-titulo">Saídas do Mês</h3>
+                        <p class="kpi-value" id="saidas-mes">R$ 0,00</p>
+                        <span class="kpi-subtitle" id="saidas-mes-count">0 lançamentos</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-primary">
+                    <div class="kpi-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 id="saldo-titulo">Saldo do Mês</h3>
+                        <p class="kpi-value" id="saldo-mes">R$ 0,00</p>
+                        <span class="kpi-trend" id="saldo-trend"></span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-warning">
+                    <div class="kpi-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>A Receber (Pendente)</h3>
+                        <p class="kpi-value" id="a-receber">R$ 0,00</p>
+                        <span class="kpi-subtitle">Valores pendentes de pagamento</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Fluxo de Caixa por Mês</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="fluxo-mensal-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Entradas por Convênio</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="entradas-convenio-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Evolução do Saldo</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="evolucao-saldo-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-area"></i> Impostos x Valor Líquido</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="impostos-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tables Section -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-table"></i> Detalhamento de Entradas</h3>
+                        <div class="table-actions">
+                            <input type="text" id="search-entradas" class="search-input" placeholder="Buscar...">
+                            <button class="btn-icon" id="export-entradas-csv" data-tooltip="Exportar CSV">
+                                <i class="fas fa-file-csv"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="entradas-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-column="convenio">
+                                        Convênio <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="mes">
+                                        Mês <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="faturamento">
+                                        Faturamento <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="impostos">
+                                        Impostos <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="valor-liquido">
+                                        Valor Líquido <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="data-pagamento">
+                                        Data Pagamento <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="status">
+                                        Status <i class="fas fa-sort"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="entradas-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Saidas Table -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-table"></i> Detalhamento de Saídas</h3>
+                        <div class="table-actions">
+                            <input type="text" id="search-saidas" class="search-input" placeholder="Buscar...">
+                            <button class="btn-icon" id="export-saidas-csv" data-tooltip="Exportar CSV">
+                                <i class="fas fa-file-csv"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="saidas-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-column="categoria">
+                                        Categoria <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="valor">
+                                        Valor <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="data-pagamento">
+                                        Data Pagamento <i class="fas fa-sort"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="saidas-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary Table by Month -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Resumo por Mês</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="resumo-mensal-table">
+                            <thead>
+                                <tr>
+                                    <th>Mês/Ano</th>
+                                    <th>Entradas</th>
+                                    <th>Saídas</th>
+                                    <th>Saldo</th>
+                                    <th>% Margem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resumo-mensal-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

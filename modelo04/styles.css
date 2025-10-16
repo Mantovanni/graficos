@@ -201,21 +201,6 @@ body {
     }
 }
 
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--dark-bg);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-}
-
-.user-info i {
-    font-size: 1.5rem;
-    color: var(--primary-color);
-}
-
 /* ===== Theme Toggle Button ===== */
 .theme-toggle {
     width: 45px;
@@ -408,15 +393,9 @@ body.light-theme .theme-toggle:hover {
 }
 
 /* ===== KPI Cards ===== */
-.kpi-section-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.kpi-row {
+.kpi-section {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-md);
 }
 
@@ -470,6 +449,10 @@ body.light-theme .theme-toggle:hover {
     background: var(--warning-color);
 }
 
+.kpi-danger::before {
+    background: var(--danger-color);
+}
+
 .kpi-icon {
     width: 60px;
     height: 60px;
@@ -501,6 +484,11 @@ body.light-theme .theme-toggle:hover {
     color: var(--warning-color);
 }
 
+.kpi-danger .kpi-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
 .kpi-content {
     flex: 1;
 }
@@ -525,6 +513,7 @@ body.light-theme .theme-toggle:hover {
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    color: var(--gray-text);
 }
 
 .trend-up {
@@ -722,31 +711,6 @@ tbody tr:hover {
     background: var(--dark-hover);
 }
 
-.trend-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.trend-positive {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--secondary-color);
-}
-
-.trend-negative {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger-color);
-}
-
-.trend-neutral {
-    background: rgba(107, 114, 128, 0.1);
-    color: var(--gray-text);
-}
-
 .status-badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
@@ -756,19 +720,13 @@ tbody tr:hover {
     text-transform: uppercase;
 }
 
-.status-growth {
+.status-realizado {
     background: rgba(16, 185, 129, 0.1);
     color: var(--secondary-color);
     border: 1px solid var(--secondary-color);
 }
 
-.status-decline {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger-color);
-    border: 1px solid var(--danger-color);
-}
-
-.status-stable {
+.status-pendente {
     background: rgba(245, 158, 11, 0.1);
     color: var(--warning-color);
     border: 1px solid var(--warning-color);
@@ -854,10 +812,6 @@ tbody tr:hover {
     .charts-section {
         grid-template-columns: 1fr;
     }
-
-    .kpi-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 @media (max-width: 1024px) {
@@ -872,10 +826,6 @@ tbody tr:hover {
     .main-content {
         order: 1;
     }
-
-    .kpi-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 @media (max-width: 768px) {
@@ -884,7 +834,22 @@ tbody tr:hover {
         gap: var(--spacing-sm);
     }
 
-    .kpi-row {
+    .dashboard-switch {
+        order: 1;
+        width: 100%;
+    }
+
+    .logo-section {
+        order: 0;
+    }
+
+    .header-info {
+        order: 2;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .kpi-section {
         grid-template-columns: 1fr;
     }
 
@@ -942,60 +907,8 @@ tbody tr:hover {
     color: var(--info-color);
 }
 
-.bg-primary {
-    background: var(--primary-color);
-}
-
-.bg-secondary {
-    background: var(--secondary-color);
-}
-
-.bg-success {
-    background: var(--secondary-color);
-}
-
-.bg-danger {
-    background: var(--danger-color);
-}
-
-.bg-warning {
-    background: var(--warning-color);
-}
-
-.font-bold {
-    font-weight: 700;
-}
-
-.font-semibold {
-    font-weight: 600;
-}
-
-.font-medium {
-    font-weight: 500;
-}
-
-.text-xs {
-    font-size: 0.75rem;
-}
-
-.text-sm {
-    font-size: 0.875rem;
-}
-
-.text-base {
-    font-size: 1rem;
-}
-
-.text-lg {
-    font-size: 1.125rem;
-}
-
-.text-xl {
-    font-size: 1.25rem;
-}
-
-.text-2xl {
-    font-size: 1.5rem;
+.text-center {
+    text-align: center;
 }
 
 /* ===== Light Theme Specific Adjustments ===== */
@@ -1019,13 +932,6 @@ body.light-theme tbody tr:hover {
 
 body.light-theme .kpi-card:hover {
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15);
-}
-
-body.light-theme .chart-container,
-body.light-theme .table-container,
-body.light-theme .filter-section,
-body.light-theme .quick-stats {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Smooth theme transitions */
