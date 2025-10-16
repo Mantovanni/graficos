@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro - Modelo 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script type="module" src="app.js"></script>
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="sidebar__header">
+                <div class="logo">Vida<span>Plena</span></div>
+                <p>Centro integrado de performance</p>
+            </div>
+            <nav>
+                <a href="../grafico1/index.html">Modelo 1</a>
+                <a class="active" href="#">Modelo 2</a>
+                <a href="../grafico3/index.html">Modelo 3</a>
+            </nav>
+            <div class="sidebar__filters">
+                <label for="periodRange">Período analisado</label>
+                <select id="periodRange">
+                    <option value="2m">Últimos 2 meses</option>
+                    <option value="3m" selected>Últimos 3 meses</option>
+                    <option value="all">Ano corrente</option>
+                </select>
+                <label for="convenioSelect">Convênio</label>
+                <select id="convenioSelect"></select>
+                <label class="checkbox">
+                    <input type="checkbox" id="includePending" checked>
+                    <span>Incluir pendentes / glosados</span>
+                </label>
+            </div>
+            <div class="sidebar__footer">
+                <button class="secondary" id="downloadReport">Exportar visão</button>
+                <button class="ghost" id="resetView">Limpar filtros</button>
+            </div>
+        </aside>
+        <main class="content">
+            <header class="content__header">
+                <div>
+                    <h1>Performance financeira da clínica</h1>
+                    <p id="periodLabel">–</p>
+                </div>
+                <div class="header-actions">
+                    <div class="chip" id="bestConvenio">Top convênio • –</div>
+                    <div class="chip" id="riskConvenio">Maior glosa • –</div>
+                </div>
+            </header>
+
+            <section class="kpi-grid">
+                <article class="kpi-card">
+                    <header>
+                        <h2>Receita líquida</h2>
+                        <span class="delta" id="netRevenueDelta">0%</span>
+                    </header>
+                    <strong id="netRevenue">R$ 0,00</strong>
+                    <p id="netRevenueDetail">–</p>
+                </article>
+                <article class="kpi-card">
+                    <header>
+                        <h2>Margem operacional</h2>
+                        <span class="delta" id="operMarginDelta">0%</span>
+                    </header>
+                    <strong id="operMargin">0%</strong>
+                    <p id="operMarginDetail">–</p>
+                </article>
+                <article class="kpi-card">
+                    <header>
+                        <h2>Prazo médio de recebimento</h2>
+                        <span class="delta" id="receivingDelta">0d</span>
+                    </header>
+                    <strong id="receivingAvg">0 dias</strong>
+                    <p id="receivingDetail">–</p>
+                </article>
+                <article class="kpi-card">
+                    <header>
+                        <h2>Índice de glosas</h2>
+                        <span class="delta" id="denialDelta">0%</span>
+                    </header>
+                    <strong id="denialIndex">0%</strong>
+                    <p id="denialDetail">–</p>
+                </article>
+            </section>
+
+            <section class="chart-grid">
+                <article class="chart-card">
+                    <header>
+                        <h3>Evolução de receita vs meta</h3>
+                        <button class="icon" data-download="revenueTrend" title="Baixar gráfico"><span>⇩</span></button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueTrend"></canvas>
+                    </div>
+                </article>
+                <article class="chart-card">
+                    <header>
+                        <h3>Composição de custos</h3>
+                        <button class="icon" data-download="costBreakdown"
+                            title="Baixar gráfico"><span>⇩</span></button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="costBreakdown"></canvas>
+                    </div>
+                </article>
+                <article class="chart-card wide">
+                    <header>
+                        <h3>Radar de convênios</h3>
+                        <button class="icon" data-download="convenioRadar"
+                            title="Baixar gráfico"><span>⇩</span></button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="convenioRadar"></canvas>
+                    </div>
+                </article>
+            </section>
+
+            <section class="table-section">
+                <header>
+                    <div>
+                        <h3>Ranking de convênios</h3>
+                        <p id="tableLabel">–</p>
+                    </div>
+                    <div class="legend">
+                        <span class="pill good">Prazo ≤ 20d</span>
+                        <span class="pill warning">Prazo 21-30d</span>
+                        <span class="pill danger">Prazo ≥ 31d</span>
+                    </div>
+                </header>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Convênio</th>
+                                <th>Receita</th>
+                                <th>Margem</th>
+                                <th>Ticket médio</th>
+                                <th>Prazo médio</th>
+                                <th>Glosa</th>
+                                <th>Share</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingTable"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

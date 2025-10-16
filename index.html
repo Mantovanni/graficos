@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro - Clínica VidaPlena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-logo">VP</span>
+                <div class="brand-info">
+                    <h1>VidaPlena</h1>
+                    <p>Inteligência financeira da clínica</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <button class="primary" id="exportCsv" title="Exporta os dados filtrados em CSV">Exportar CSV</button>
+                <button class="ghost" id="toggleTheme" title="Alterna entre tema claro e escuro">Tema</button>
+            </div>
+        </header>
+
+        <main class="layout">
+            <section class="filters" aria-label="Área de filtros">
+                <div class="filter-group">
+                    <label for="startPeriod">Período inicial</label>
+                    <select id="startPeriod"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="endPeriod">Período final</label>
+                    <select id="endPeriod"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="convenioFilter">Convênio</label>
+                    <select id="convenioFilter"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter">Status do recebimento</label>
+                    <select id="statusFilter"></select>
+                </div>
+                <div class="filter-group search">
+                    <label for="procedureSearch">Procedimento</label>
+                    <input type="search" id="procedureSearch" placeholder="Buscar por procedimento, médico ou setor">
+                </div>
+                <div class="filter-group">
+                    <label class="switch" title="Considerar apenas lançamentos recebidos">
+                        <input type="checkbox" id="receivedOnly">
+                        <span>Somente recebidos</span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="cards" aria-label="Indicadores principais">
+                <article class="card" data-tooltip="Total acumulado de receitas confirmadas no período filtrado">
+                    <header>
+                        <h2>Faturamento bruto</h2>
+                        <span id="grossRevenueTrend" class="trend positive">+0%</span>
+                    </header>
+                    <strong id="grossRevenue">R$ 0,00</strong>
+                    <footer>
+                        <p id="grossRevenueDetail">–</p>
+                    </footer>
+                </article>
+                <article class="card" data-tooltip="Soma das despesas fixas e variáveis do período filtrado">
+                    <header>
+                        <h2>Despesas totais</h2>
+                        <span id="totalExpensesTrend" class="trend negative">+0%</span>
+                    </header>
+                    <strong id="totalExpenses">R$ 0,00</strong>
+                    <footer>
+                        <p id="totalExpensesDetail">–</p>
+                    </footer>
+                </article>
+                <article class="card" data-tooltip="Receita líquida após despesas">
+                    <header>
+                        <h2>Resultado líquido</h2>
+                        <span id="netMarginPercentage" class="trend neutral">0%</span>
+                    </header>
+                    <strong id="netMargin">R$ 0,00</strong>
+                    <footer>
+                        <p id="netMarginDetail">–</p>
+                    </footer>
+                </article>
+                <article class="card" data-tooltip="Média de recebimento por procedimento executado">
+                    <header>
+                        <h2>Ticket médio</h2>
+                        <span id="ticketTrend" class="trend neutral">0%</span>
+                    </header>
+                    <strong id="avgTicket">R$ 0,00</strong>
+                    <footer>
+                        <p id="avgTicketDetail">–</p>
+                    </footer>
+                </article>
+                <article class="card" data-tooltip="Quantidade de procedimentos realizados">
+                    <header>
+                        <h2>Procedimentos</h2>
+                        <span id="proceduresGrowth" class="trend positive">0%</span>
+                    </header>
+                    <strong id="proceduresCount">0</strong>
+                    <footer>
+                        <p id="proceduresDetail">–</p>
+                    </footer>
+                </article>
+                <article class="card" data-tooltip="Tempo médio de repasse dos convênios">
+                    <header>
+                        <h2>Prazo médio de recebimento</h2>
+                        <span id="receivableTrend" class="trend neutral">0d</span>
+                    </header>
+                    <strong id="avgReceivable">0 dias</strong>
+                    <footer>
+                        <p id="avgReceivableDetail">–</p>
+                    </footer>
+                </article>
+            </section>
+
+            <section class="grid" aria-label="Visualizações" id="visualPanels">
+                <article class="panel">
+                    <header>
+                        <h3>Faturamento x Despesas</h3>
+                        <button class="ghost" data-download="financialEvolution"
+                            title="Baixar gráfico em PNG">Baixar</button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="financialEvolution"></canvas>
+                    </div>
+                </article>
+                <article class="panel">
+                    <header>
+                        <h3>Faturamento por convênio</h3>
+                        <button class="ghost" data-download="revenueByConvenio"
+                            title="Baixar gráfico em PNG">Baixar</button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueByConvenio"></canvas>
+                    </div>
+                </article>
+                <article class="panel">
+                    <header>
+                        <h3>Mix de procedimentos</h3>
+                        <button class="ghost" data-download="procedureMix" title="Baixar gráfico em PNG">Baixar</button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="procedureMix"></canvas>
+                    </div>
+                </article>
+                <article class="panel">
+                    <header>
+                        <h3>Status de recebimentos</h3>
+                        <button class="ghost" data-download="receivableStatus"
+                            title="Baixar gráfico em PNG">Baixar</button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="receivableStatus"></canvas>
+                    </div>
+                </article>
+            </section>
+
+            <section class="tables" aria-label="Listas detalhadas">
+                <article class="panel full">
+                    <header>
+                        <div>
+                            <h3>Produção e faturamento detalhados</h3>
+                            <p id="tableCaption">Mostrando 0 itens</p>
+                        </div>
+                        <div class="table-actions">
+                            <button class="ghost" id="resetFilters">Limpar filtros</button>
+                        </div>
+                    </header>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Procedimento</th>
+                                    <th>Convênio</th>
+                                    <th>Médico</th>
+                                    <th>Setor</th>
+                                    <th>Qtd</th>
+                                    <th>Faturamento</th>
+                                    <th>Despesa</th>
+                                    <th>Resultado</th>
+                                    <th>Status</th>
+                                    <th>Prazo (dias)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productionTable"></tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="panel half">
+                    <header>
+                        <h3>Maiores despesas</h3>
+                    </header>
+                    <div class="table-wrapper compact">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mês</th>
+                                    <th>Categoria</th>
+                                    <th>Descrição</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseTable"></tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="panel half">
+                    <header>
+                        <h3>KPIs por convênio</h3>
+                    </header>
+                    <div class="table-wrapper compact">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Convênio</th>
+                                    <th>Faturamento</th>
+                                    <th>Procedimentos</th>
+                                    <th>Ticket médio</th>
+                                    <th>Prazo médio</th>
+                                    <th>Índice de glosa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kpiTable"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro - Modelo 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script type="module" src="app.js"></script>
+</head>
+
+<body>
+    <div class="viewport">
+        <header class="topbar">
+            <div class="topbar__brand">
+                <a href="../grafico1/index.html" class="brand-logo">VP</a>
+                <div>
+                    <h1>Financial cockpit</h1>
+                    <p>Métricas operacionais e de receita</p>
+                </div>
+            </div>
+            <nav class="topbar__links">
+                <a href="../grafico1/index.html">Modelo 1</a>
+                <a href="../grafico2/index.html">Modelo 2</a>
+                <a class="active" href="#">Modelo 3</a>
+            </nav>
+            <div class="topbar__actions">
+                <button id="toggleContrast">Contraste</button>
+                <button class="primary" id="exportJson">Exportar JSON</button>
+            </div>
+        </header>
+
+        <main class="main">
+            <section class="filters">
+                <div class="filter">
+                    <label for="monthFilter">Período</label>
+                    <select id="monthFilter"></select>
+                </div>
+                <div class="filter">
+                    <label for="segmentFilter">Setor</label>
+                    <select id="segmentFilter"></select>
+                </div>
+                <div class="filter">
+                    <label>Status</label>
+                    <div class="status-group" id="statusGroup"></div>
+                </div>
+                <div class="filter">
+                    <label for="doctorSearch">Profissional</label>
+                    <input type="search" id="doctorSearch" placeholder="Buscar por médico(a)">
+                </div>
+            </section>
+
+            <section class="cards">
+                <article class="card">
+                    <header>
+                        <h2>Faturamento</h2><span id="cardRevenueDelta">0%</span>
+                    </header>
+                    <strong id="cardRevenue">R$ 0,00</strong>
+                    <p id="cardRevenueDetail">–</p>
+                </article>
+                <article class="card">
+                    <header>
+                        <h2>Despesas</h2><span id="cardExpenseDelta">0%</span>
+                    </header>
+                    <strong id="cardExpense">R$ 0,00</strong>
+                    <p id="cardExpenseDetail">–</p>
+                </article>
+                <article class="card">
+                    <header>
+                        <h2>Resultado</h2><span id="cardResultDelta">0%</span>
+                    </header>
+                    <strong id="cardResult">R$ 0,00</strong>
+                    <p id="cardResultDetail">–</p>
+                </article>
+                <article class="card">
+                    <header>
+                        <h2>Glosa recuperável</h2><span id="cardDenial">0%</span>
+                    </header>
+                    <strong id="cardDenialValue">R$ 0,00</strong>
+                    <p id="cardDenialDetail">–</p>
+                </article>
+            </section>
+
+            <section class="progress-section">
+                <header>
+                    <h3>Metas do ciclo</h3>
+                    <span id="cycleLabel">–</span>
+                </header>
+                <div class="progress-grid" id="progressGrid"></div>
+            </section>
+
+            <section class="charts">
+                <article class="panel">
+                    <header>
+                        <h3>Fluxo mensal</h3>
+                        <button data-download="flowChart" class="ghost">Baixar</button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="flowChart"></canvas>
+                    </div>
+                </article>
+                <article class="panel">
+                    <header>
+                        <h3>Receita por setor</h3>
+                        <button data-download="sectorChart" class="ghost">Baixar</button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="sectorChart"></canvas>
+                    </div>
+                </article>
+                <article class="panel wide">
+                    <header>
+                        <h3>Glosa x Prazo por convênio</h3>
+                        <button data-download="scatterChart" class="ghost">Baixar</button>
+                    </header>
+                    <div class="chart-wrapper">
+                        <canvas id="scatterChart"></canvas>
+                    </div>
+                </article>
+            </section>
+
+            <section class="tables">
+                <article class="panel">
+                    <header>
+                        <div>
+                            <h3>Top procedimentos por margem</h3>
+                            <p id="procedureLabel">–</p>
+                        </div>
+                        <button class="ghost" id="resetFilters">Reset</button>
+                    </header>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Procedimento</th>
+                                    <th>Convênio</th>
+                                    <th>Médico</th>
+                                    <th>Qtd</th>
+                                    <th>Receita</th>
+                                    <th>Margem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="procedureTable"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
