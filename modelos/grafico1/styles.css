@@ -316,12 +316,18 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .chart-wrapper {
     position: relative;
     width: 100%;
     height: clamp(260px, 36vh, 380px);
+}
+
+.chart-wrapper.small {
+    height: clamp(240px, 32vh, 360px);
 }
 
 .chart-wrapper canvas {
@@ -358,6 +364,66 @@ button:hover {
 
 .table-wrapper.compact table {
     font-size: 0.85rem;
+}
+
+.comparison-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.comparison-content .table-wrapper table {
+    min-width: 520px;
+}
+
+.comparison-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.comparison-controls select {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-elevated);
+    padding: 10px 14px;
+    color: var(--text);
+    min-width: 140px;
+}
+
+.comparison-controls span {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.delta {
+    font-weight: 600;
+}
+
+.delta-positive {
+    color: var(--success);
+}
+
+.delta-negative {
+    color: var(--danger);
+}
+
+.delta-neutral {
+    color: var(--muted);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 table {
@@ -430,5 +496,14 @@ tr:last-child td {
 
     .panel.half {
         grid-column: 1 / -1;
+    }
+
+    .comparison-content {
+        grid-template-columns: 1fr;
+    }
+
+    .comparison-controls {
+        justify-content: flex-end;
+        flex-wrap: wrap;
     }
 }

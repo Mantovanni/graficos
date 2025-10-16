@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro - SISCLIN</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-hospital"></i>
+                <h1>SISCLIN Dashboard</h1>
+            </div>
+            <div class="header-info">
+                <span id="current-date"></span>
+                <button id="theme-toggle" class="theme-toggle" title="Alternar Tema">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <!-- <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Administrador</span>
+                </div> -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="filter-section">
+                <h3><i class="fas fa-filter"></i> Filtros</h3>
+
+                <div class="filter-group">
+                    <label for="month-filter">Mês</label>
+                    <select id="month-filter" class="filter-select">
+                        <option value="all">Todos os Meses</option>
+                        <option value="julho">Julho</option>
+                        <option value="agosto">Agosto</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="procedure-filter">Procedimento</label>
+                    <select id="procedure-filter" class="filter-select">
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="min-value">Valor Mínimo</label>
+                    <input type="number" id="min-value" class="filter-input" placeholder="R$ 0,00">
+                </div>
+
+                <div class="filter-group">
+                    <label for="max-value">Valor Máximo</label>
+                    <input type="number" id="max-value" class="filter-input" placeholder="R$ 100000,00">
+                </div>
+
+                <button class="btn-apply-filter" id="apply-filter">
+                    <i class="fas fa-check"></i> Aplicar Filtros
+                </button>
+
+                <button class="btn-clear-filter" id="clear-filter">
+                    <i class="fas fa-times"></i> Limpar Filtros
+                </button>
+            </div>
+
+            <div class="quick-stats">
+                <h3><i class="fas fa-chart-line"></i> Estatísticas Rápidas</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Total Procedimentos</span>
+                    <span class="stat-value" id="total-procedures">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Receita Total</span>
+                    <span class="stat-value" id="total-revenue">R$ 0,00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Ticket Médio</span>
+                    <span class="stat-value" id="avg-ticket">R$ 0,00</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- KPI Cards -->
+            <section class="kpi-section">
+                <div class="kpi-card kpi-primary">
+                    <div class="kpi-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Receita Julho</h3>
+                        <p class="kpi-value" id="revenue-july">R$ 0,00</p>
+                        <span class="kpi-trend" id="trend-july"></span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-success">
+                    <div class="kpi-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Receita Agosto</h3>
+                        <p class="kpi-value" id="revenue-august">R$ 0,00</p>
+                        <span class="kpi-trend" id="trend-august"></span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-info">
+                    <div class="kpi-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Variação</h3>
+                        <p class="kpi-value" id="variation-percent">0%</p>
+                        <span class="kpi-subtitle" id="variation-value">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-warning">
+                    <div class="kpi-icon">
+                        <i class="fas fa-procedures"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Total Procedimentos</h3>
+                        <p class="kpi-value" id="total-proc-count">0</p>
+                        <span class="kpi-subtitle">Julho + Agosto</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Comparativo de Receita por Mês</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="revenue-comparison-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Evolução de Procedimentos</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="procedures-evolution-chart"></canvas>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Top 10 Procedimentos - Agosto</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="top-procedures-august-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Top 10 Procedimentos - Julho</h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" data-tooltip="Exportar dados">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="top-procedures-july-chart"></canvas>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Tables Section -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-table"></i> Detalhamento por Procedimento</h3>
+                        <div class="table-actions">
+                            <input type="text" id="search-table" class="search-input"
+                                placeholder="Buscar procedimento...">
+                            <button class="btn-icon" id="export-csv" data-tooltip="Exportar CSV">
+                                <i class="fas fa-file-csv"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="procedures-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-column="procedimento">
+                                        Procedimento <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="qty-julho">
+                                        Qtd. Julho <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="total-julho">
+                                        Total Julho <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="qty-agosto">
+                                        Qtd. Agosto <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="total-agosto">
+                                        Total Agosto <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="variacao">
+                                        Variação <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="total-geral">
+                                        Total Geral <i class="fas fa-sort"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="procedures-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comparison Table -->
+            <section class="tables-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-exchange-alt"></i> Análise Comparativa Detalhada</h3>
+                        <div class="table-actions">
+                            <select id="sort-comparison" class="filter-select">
+                                <option value="variation-desc">Maior Crescimento</option>
+                                <option value="variation-asc">Maior Queda</option>
+                                <option value="total-desc">Maior Receita</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Procedimento</th>
+                                    <th>Variação Qtd.</th>
+                                    <th>Variação Receita</th>
+                                    <th>% Crescimento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparison-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -32,6 +32,10 @@ const tableBody = document.querySelector("#productionTable");
 const tableCaption = document.querySelector("#tableCaption");
 const expenseTableBody = document.querySelector("#expenseTable");
 const kpiTableBody = document.querySelector("#kpiTable");
+const comparisonMonthASelect = document.querySelector("#comparisonMonthA");
+const comparisonMonthBSelect = document.querySelector("#comparisonMonthB");
+const comparisonInfoEl = document.querySelector("#comparisonInfo");
+const comparisonTableBody = document.querySelector("#comparisonTable");
 
 const resetFiltersButton = document.querySelector("#resetFilters");
 const themeToggle = document.querySelector("#toggleTheme");
@@ -41,6 +45,7 @@ let financialEvolutionChart;
 let revenueByConvenioChart;
 let procedureMixChart;
 let receivableStatusChart;
+let procedureComparisonChart;
 
 const state = {
     months: getUniqueMonths(),
@@ -73,6 +78,11 @@ filters.forEach((control) => {
     control.addEventListener(eventName, handleFilterChange);
 });
 
+if (comparisonMonthASelect && comparisonMonthBSelect) {
+    comparisonMonthASelect.addEventListener("change", renderComparison);
+    comparisonMonthBSelect.addEventListener("change", renderComparison);
+}
+
 resetFiltersButton.addEventListener("click", () => {
     startPeriodSelect.value = state.months[0];
     endPeriodSelect.value = state.months[state.months.length - 1];
@@ -93,6 +103,7 @@ themeToggle.addEventListener("click", () => {
     const scheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
     document.documentElement.style.colorScheme = scheme;
     renderCharts();
+    renderComparison();
 });
 
 exportCsvButton.addEventListener("click", () => {
@@ -145,6 +156,8 @@ function render() {
     populateExpenseTable(expenses);
     populateKpiTable(production);
     renderCharts(production, expenses);
+    updateComparisonOptions(getSelectedMonths());
+    renderComparison();
 }
 
 function handleFilterChange() {
@@ -157,34 +170,53 @@ function handleFilterChange() {
 }
 
 function getFilteredProduction() {
-    const startIndex = state.months.indexOf(startPeriodSelect.value);
-    const endIndex = state.months.indexOf(endPeriodSelect.value);
-    const searchTerm = procedureSearchInput.value.toLowerCase().trim();
-    const convenioFilter = convenioFilterSelect.value;
-    const statusFilter = statusFilterSelect.value;
-    const receivedOnly = receivedOnlyToggle.checked;
-
+    const context = getFilterContext();
     return productionData.filter((item) => {
-        const monthIndex = state.months.indexOf(item.month);
-        if (monthIndex < startIndex || monthIndex > endIndex) return false;
-        if (convenioFilter !== "all" && item.convenio !== convenioFilter) return false;
-        if (statusFilter !== "all" && item.status !== statusFilter) return false;
-        if (receivedOnly && item.status !== "Recebido" && item.status !== "Pago") return false;
-        if (searchTerm) {
-            const haystack = `${item.procedure} ${item.convenio} ${item.doctor} ${item.sector}`.toLowerCase();
-            if (!haystack.includes(searchTerm)) return false;
-        }
-        return true;
+        const monthIndex = context.months.indexOf(item.month);
+        if (monthIndex < context.startIndex || monthIndex > context.endIndex) return false;
+        return matchesCommonFilters(item, context);
     });
 }
 
 function getFilteredExpenses() {
+    const context = getFilterContext();
+    return expenseData.filter((expense) => {
+        const monthIndex = context.months.indexOf(expense.month);
+        return monthIndex >= context.startIndex && monthIndex <= context.endIndex;
+    });
+}
+
+function getFilterContext() {
     const startIndex = state.months.indexOf(startPeriodSelect.value);
     const endIndex = state.months.indexOf(endPeriodSelect.value);
-    return expenseData.filter((expense) => {
-        const monthIndex = state.months.indexOf(expense.month);
-        return monthIndex >= startIndex && monthIndex <= endIndex;
-    });
+    return {
+        startIndex,
+        endIndex,
+        months: state.months,
+        searchTerm: procedureSearchInput.value.toLowerCase().trim(),
+        convenioFilter: convenioFilterSelect.value,
+        statusFilter: statusFilterSelect.value,
+        receivedOnly: receivedOnlyToggle.checked,
+    };
+}
+
+function matchesCommonFilters(item, context) {
+    if (context.convenioFilter !== "all" && item.convenio !== context.convenioFilter) return false;
+    if (context.statusFilter !== "all" && item.status !== context.statusFilter) return false;
+    if (context.receivedOnly && item.status !== "Recebido" && item.status !== "Pago") return false;
+    if (context.searchTerm) {
+        const haystack = `${item.procedure} ${item.convenio} ${item.doctor} ${item.sector}`.toLowerCase();
+        if (!haystack.includes(context.searchTerm)) return false;
+    }
+    return true;
+}
+
+function getFilteredProductionForMonth(month) {
+    const context = getFilterContext();
+    const monthIndex = context.months.indexOf(month);
+    if (monthIndex === -1) return [];
+    if (monthIndex < context.startIndex || monthIndex > context.endIndex) return [];
+    return productionData.filter((item) => item.month === month && matchesCommonFilters(item, context));
 }
 
 function updateCards(production, expenses) {
@@ -418,6 +450,175 @@ function renderCharts(production = getFilteredProduction(), expenses = getFilter
     });
 }
 
+function updateComparisonOptions(months) {
+    if (!comparisonMonthASelect || !comparisonMonthBSelect) return;
+    if (!months.length) {
+        comparisonMonthASelect.innerHTML = "";
+        comparisonMonthBSelect.innerHTML = "";
+        return;
+    }
+
+    const previousA = comparisonMonthASelect.value;
+    const previousB = comparisonMonthBSelect.value;
+    populateSelect(comparisonMonthASelect, months);
+    populateSelect(comparisonMonthBSelect, months);
+
+    const fallbackB = months[months.length - 1];
+    const fallbackA = months[Math.max(months.length - 2, 0)];
+
+    comparisonMonthASelect.value = months.includes(previousA) ? previousA : fallbackA;
+    comparisonMonthBSelect.value = months.includes(previousB) ? previousB : fallbackB;
+
+    if (comparisonMonthASelect.value === comparisonMonthBSelect.value && months.length > 1) {
+        const indexB = months.indexOf(comparisonMonthBSelect.value);
+        const indexA = Math.max(indexB - 1, 0);
+        comparisonMonthASelect.value = months[indexA];
+    }
+}
+
+function renderComparison() {
+    if (!comparisonMonthASelect || !comparisonMonthBSelect) return;
+
+    const monthA = comparisonMonthASelect.value;
+    const monthB = comparisonMonthBSelect.value;
+    const labelA = monthNames[monthA] || monthA;
+    const labelB = monthNames[monthB] || monthB;
+
+    const monthAData = getFilteredProductionForMonth(monthA);
+    const monthBData = getFilteredProductionForMonth(monthB);
+    const summaryA = summarizeByProcedure(monthAData);
+    const summaryB = summarizeByProcedure(monthBData);
+    const procedures = new Set([...summaryA.keys(), ...summaryB.keys()]);
+
+    const rows = Array.from(procedures).map((procedure) => {
+        const base = summaryA.get(procedure) || { revenue: 0, quantity: 0 };
+        const current = summaryB.get(procedure) || { revenue: 0, quantity: 0 };
+        return {
+            procedure,
+            revenueA: base.revenue,
+            revenueB: current.revenue,
+            variation: current.revenue - base.revenue,
+            percentage: computeDelta(current.revenue, base.revenue),
+            qtyDelta: current.quantity - base.quantity,
+        };
+    }).filter((row) => row.revenueA || row.revenueB);
+
+    const totalA = rows.reduce((acc, row) => acc + row.revenueA, 0);
+    const totalB = rows.reduce((acc, row) => acc + row.revenueB, 0);
+    const totalDelta = totalB - totalA;
+    const totalDeltaPercent = computeDelta(totalB, totalA);
+
+    if (comparisonInfoEl) {
+        if (!rows.length) {
+            comparisonInfoEl.textContent = "Sem dados para os filtros selecionados.";
+        } else if (monthA === monthB) {
+            comparisonInfoEl.textContent = `Visualizando o detalhamento de ${labelA}.`;
+        } else {
+            const direction = totalDelta > 0 ? "acima" : totalDelta < 0 ? "abaixo" : "em linha com";
+            const deltaText = formatSignedCurrency(totalDelta);
+            const percentText = formatDelta(totalDeltaPercent, "%");
+            if (direction === "em linha com") {
+                comparisonInfoEl.textContent = `${labelB} está em linha com ${labelA} (${deltaText}, ${percentText}).`;
+            } else {
+                comparisonInfoEl.textContent = `${labelB} está ${direction} ${labelA} (${deltaText}, ${percentText}).`;
+            }
+        }
+    }
+
+    if (!rows.length) {
+        if (comparisonTableBody) {
+            comparisonTableBody.innerHTML = '<tr><td colspan="6">Sem dados para os filtros selecionados.</td></tr>';
+        }
+        const ctx = document.getElementById("procedureComparison");
+        if (ctx) {
+            procedureComparisonChart = upsertChart(procedureComparisonChart, ctx, {
+                type: "bar",
+                data: { labels: [], datasets: [] },
+                options: comparisonChartOptions(),
+            });
+        }
+        return;
+    }
+
+    const sorted = rows.sort((a, b) => Math.abs(b.variation) - Math.abs(a.variation));
+    const tableRows = sorted.slice(0, 10).map((row) => {
+        const moneyClass = row.variation > 0 ? "delta-positive" : row.variation < 0 ? "delta-negative" : "delta-neutral";
+        const qtyClass = row.qtyDelta > 0 ? "delta-positive" : row.qtyDelta < 0 ? "delta-negative" : "delta-neutral";
+        return `<tr>
+            <td>${row.procedure}</td>
+            <td>${currencyFormatter.format(row.revenueA)}</td>
+            <td>${currencyFormatter.format(row.revenueB)}</td>
+            <td><span class="delta ${moneyClass}">${formatSignedCurrency(row.variation)}</span></td>
+            <td><span class="delta ${moneyClass}">${formatDelta(row.percentage, "%")}</span></td>
+            <td><span class="delta ${qtyClass}">${formatSignedNumber(row.qtyDelta)}</span></td>
+        </tr>`;
+    });
+
+    if (comparisonTableBody) {
+        comparisonTableBody.innerHTML = tableRows.join("") || '<tr><td colspan="6">Sem dados para os filtros selecionados.</td></tr>';
+    }
+
+    const chartRows = sorted.slice(0, 6);
+    const ctx = document.getElementById("procedureComparison");
+    if (!ctx) return;
+
+    const primaryColor = cssVar("--accent", "#3867ff");
+    const secondaryColor = cssVar("--muted", "#6f7893");
+
+    const data = {
+        labels: chartRows.map((row) => row.procedure),
+        datasets: [
+            {
+                label: labelA,
+                data: chartRows.map((row) => row.revenueA),
+                backgroundColor: withOpacity(secondaryColor, 0.28),
+                borderColor: secondaryColor,
+                borderWidth: 1.5,
+                borderRadius: 12,
+            },
+            {
+                label: labelB,
+                data: chartRows.map((row) => row.revenueB),
+                backgroundColor: withOpacity(primaryColor, 0.35),
+                borderColor: primaryColor,
+                borderWidth: 1.5,
+                borderRadius: 12,
+            },
+        ],
+    };
+
+    procedureComparisonChart = upsertChart(procedureComparisonChart, ctx, {
+        type: "bar",
+        data,
+        options: comparisonChartOptions(),
+    });
+}
+
+function comparisonChartOptions() {
+    return {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                ticks: {
+                    callback: (value) => currencyFormatter.format(value),
+                },
+            },
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: (ctx) => `${ctx.dataset.label}: ${currencyFormatter.format(ctx.parsed.x)}`,
+                },
+            },
+            legend: {
+                display: true,
+            },
+        },
+    };
+}
+
 function populateProductionTable(production) {
     tableBody.innerHTML = "";
     if (!production.length) {
@@ -542,6 +743,17 @@ function aggregateByKey(list, key) {
     };
 }
 
+function summarizeByProcedure(list) {
+    const map = new Map();
+    list.forEach((item) => {
+        const entry = map.get(item.procedure) || { revenue: 0, quantity: 0 };
+        entry.revenue += item.revenue;
+        entry.quantity += item.quantity;
+        map.set(item.procedure, entry);
+    });
+    return map;
+}
+
 function populateSelect(select, values, includeAll = false) {
     select.innerHTML = "";
     if (includeAll) {
@@ -654,6 +866,47 @@ function generatePalette(count, opacity = 0.85) {
     return colors;
 }
 
+function cssVar(name, fallback) {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name);
+    return value ? value.trim() : fallback;
+}
+
+function withOpacity(color, opacity) {
+    if (!color) return `rgba(56, 103, 255, ${opacity})`;
+    if (color.startsWith("rgba") || color.startsWith("rgb")) {
+        return color.replace(/rgba?\(([^)]+)\)/, (match, rgbValues) => {
+            const parts = rgbValues.split(",").map((part) => part.trim());
+            const [r, g, b] = parts;
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        });
+    }
+    const hex = color.replace("#", "").trim();
+    if (hex.length === 6) {
+        const bigint = parseInt(hex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+    return color;
+}
+
+function formatSignedCurrency(value) {
+    if (!Number.isFinite(value) || value === 0) {
+        return currencyFormatter.format(0);
+    }
+    const sign = value > 0 ? "+" : "-";
+    return `${sign}${currencyFormatter.format(Math.abs(value))}`;
+}
+
+function formatSignedNumber(value) {
+    if (!Number.isFinite(value) || value === 0) {
+        return "0";
+    }
+    const sign = value > 0 ? "+" : "-";
+    return `${sign}${numberFormatter.format(Math.abs(value))}`;
+}
+
 function upsertChart(chartInstance, context, config) {
     if (chartInstance) {
         chartInstance.data = config.data;
@@ -674,6 +927,8 @@ function getChartInstance(id) {
             return procedureMixChart;
         case "receivableStatus":
             return receivableStatusChart;
+        case "procedureComparison":
+            return procedureComparisonChart;
         default:
             return null;
     }

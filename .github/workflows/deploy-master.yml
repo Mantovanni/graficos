@@ -1,0 +1,23 @@
+name: Deploy Main
+on: 
+  push:
+    branches:
+      - main  
+jobs:
+  web-deploy:
+    name: 🚀 Deploy pro Servidor Web apos o Push
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v3
+    
+    - name: Deploy to Server
+      uses: easingthemes/ssh-deploy@main
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY_AWS }}
+          ARGS: "-rlgoDzvc -i"
+          SOURCE: "./"
+          REMOTE_HOST: mantovanitech.com.br
+          REMOTE_USER: ubuntu
+          TARGET: /var/www/mantovanitech.com.br/public_html/graficos
+          EXCLUDE: "/dist/, /node_modules/, /.git/, /.github/,.gitignore, README.md, /doc/"
