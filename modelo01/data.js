@@ -40,7 +40,25 @@ const clinicData = {
         { procedimento: "POLIPOS EDA PARTICULAR", quantidade: 9, total: 1800.00 },
         { procedimento: "TESTE RESPIRATÓRIO", quantidade: 13, total: 4000.00 }
     ],
-    setembro: [],
+    setembro: [
+        { procedimento: "COLONOSCOPIA COM RETIRADA DE PÓLIPOS", quantidade: 30, total: 66100.00 },
+        { procedimento: "ENDOSCOPIA DIGESTIVA ALTA", quantidade: 98, total: 59580.00 },
+        { procedimento: "COLONOSCOPIA", quantidade: 33, total: 50100.00 },
+        { procedimento: "POLIPECTOMIA DO COLON UNIMED", quantidade: 25, total: 33633.25 },
+        { procedimento: "GASTROENTEROLOGIA", quantidade: 50, total: 25250.00 },
+        { procedimento: "ENDOSCOPIA DIGESTIVA ALTA SUS", quantidade: 82, total: 23600.00 },
+        { procedimento: "POLIPECTOMIA DE ENDOSCOPIA UNIMED", quantidade: 21, total: 20833.89 },
+        { procedimento: "ENDOSCOPIA COM POLIPOS SUS", quantidade: 32, total: 20800.00 },
+        { procedimento: "COLONOSCOPIA SUS", quantidade: 18, total: 10700.00 },
+        { procedimento: "ENDOSCOPIA DIGESTIVA ALTA UNIMED", quantidade: 26, total: 8038.94 },
+        { procedimento: "CONSULTA GASTRO UNIMED", quantidade: 50, total: 5750.00 },
+        { procedimento: "TESTE RESPIRATÓRIO", quantidade: 15, total: 4600.00 },
+        { procedimento: "COLONOSCOPIA UNIMED", quantidade: 9, total: 4347.90 },
+        { procedimento: "RETOSSIGMOIDOSCOPIA", quantidade: 6, total: 2550.00 },
+        { procedimento: "POLIPOS EDA PARTICULAR", quantidade: 7, total: 1700.00 },
+        { procedimento: "LIGADURA DE VARIZES ESOFÁGICA", quantidade: 1, total: 1400.00 },
+        { procedimento: "PHMETRIA / MANOMETRIA UNIMED", quantidade: 2, total: 1308.56 }
+    ],
     outubro: [],
     novembro: [],
     dezembro: []
