@@ -3,8 +3,8 @@ let charts = {};
 let filteredData = null;
 let currentSort = { column: null, direction: 'asc' };
 let currentTheme = 'dark';
-let selectedMonth1 = 'julho';
-let selectedMonth2 = 'agosto';
+let selectedMonth1 = 'agosto';
+let selectedMonth2 = 'setembro';
 
 // ===== Theme Functions =====
 const initTheme = () => {

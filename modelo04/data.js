@@ -17,12 +17,12 @@ const fluxoCaixaData = {
         // Valores a receber (pendentes de pagamento)
         { convenio: "ITAGIMIRIM", mes: "JULHO", numeroNota: "224", faturamento: 6100.00, impostos: 0, valorLiquidoReceber: 6100.00, valorRecebido: 0, dataPagamento: "", dataVencimento: "16/10/2025", status: "Pendente" },
 
-        { convenio: "PARTICULAR", mes: "Setembro", numeroNota: "", faturamento: 212722.29, impostos: 0, valorLiquidoReceber: 212722.29, valorRecebido: 212722.29, dataPagamento: "31/09/2025", dataVencimento: "31/09/2025", status: "Realizado" },
-        { convenio: "UNIMED", mes: "Setembro", numeroNota: "", faturamento: 83700.15, impostos: 22360.29, valorLiquidoReceber: 61513.07, valorRecebido: 61513.07, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
-        { convenio: "BELMONTE", mes: "Setembro", numeroNota: "", faturamento: 3300.00, impostos: 907.50, valorLiquidoReceber: 2392.50, valorRecebido: 0, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
-        { convenio: "SUS PORTO", mes: "Setembro", numeroNota: "284", faturamento: 34800.00, impostos: 827.00, valorLiquidoReceber: 33973.00, valorRecebido: 40523.00, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
-        { convenio: "ITAGIMIRIM", mes: "Setembro", numeroNota: "", faturamento: 149000.00, impostos: 0, valorLiquidoReceber: 6100.00, valorRecebido: 0, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
-        { convenio: "GUARATINGA", mes: "Setembro", numeroNota: "", faturamento: 5500.00, impostos: 1512.50, valorLiquidoReceber: 3987.50, valorRecebido: 0, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
+        { convenio: "PARTICULAR", mes: "SETEMBRO", numeroNota: "", faturamento: 212722.29, impostos: 0, valorLiquidoReceber: 212722.29, valorRecebido: 212722.29, dataPagamento: "30/09/2025", dataVencimento: "30/09/2025", status: "Realizado" },
+        { convenio: "UNIMED", mes: "SETEMBRO", numeroNota: "", faturamento: 83700.15, impostos: 22360.29, valorLiquidoReceber: 61513.07, valorRecebido: 61513.07, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
+        { convenio: "BELMONTE", mes: "SETEMBRO", numeroNota: "", faturamento: 3300.00, impostos: 907.50, valorLiquidoReceber: 2392.50, valorRecebido: 0, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
+        { convenio: "SUS PORTO", mes: "SETEMBRO", numeroNota: "284", faturamento: 34800.00, impostos: 827.00, valorLiquidoReceber: 33973.00, valorRecebido: 40523.00, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
+        { convenio: "ITAGIMIRIM", mes: "SETEMBRO", numeroNota: "", faturamento: 149000.00, impostos: 0, valorLiquidoReceber: 6100.00, valorRecebido: 0, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
+        { convenio: "GUARATINGA", mes: "SETEMBRO", numeroNota: "", faturamento: 5500.00, impostos: 1512.50, valorLiquidoReceber: 3987.50, valorRecebido: 0, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
  ],
     saidas: [
         { categoria: "Geral", valor: 51632.96, dataPagamento: "31/07/2025" },
