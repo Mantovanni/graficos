@@ -23,29 +23,17 @@ const fluxoCaixaData = {
         { convenio: "SUS PORTO", mes: "SETEMBRO", numeroNota: "284", faturamento: 34800.00, impostos: 827.00, valorLiquidoReceber: 33973.00, valorRecebido: 40523.00, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
         { convenio: "ITAGIMIRIM", mes: "SETEMBRO", numeroNota: "", faturamento: 149000.00, impostos: 0, valorLiquidoReceber: 6100.00, valorRecebido: 0, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
         { convenio: "GUARATINGA", mes: "SETEMBRO", numeroNota: "", faturamento: 5500.00, impostos: 1512.50, valorLiquidoReceber: 3987.50, valorRecebido: 0, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
-        { convenio: "PARTICULAR", mes: "OUTUBRO", numeroNota: "", faturamento: 203889.84, impostos: 0, valorLiquidoReceber: 203889.84, valorRecebido: 203889.84, dataPagamento: "30/10/2025", dataVencimento: "30/10/2025", status: "Realizado" },
-        { convenio: "PARTICULAR", mes: "NOVEMBRO", numeroNota: "", faturamento: 149845.00, impostos: 0, valorLiquidoReceber: 149845.00, valorRecebido: 149845.00, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
-        { convenio: "UNIMED", mes: "OUTUBRO", numeroNota: "", faturamento: 114112.16, impostos: 30732.71, valorLiquidoReceber: 83379.45, valorRecebido: 83379.45, dataPagamento: "30/11/2025", dataVencimento: "30/11/2025", status: "Realizado" },
-        { convenio: "UNIMED", mes: "NOVEMBRO", numeroNota: "", faturamento: 73975.73, impostos: 19695.19, valorLiquidoReceber: 54280.54, valorRecebido: 54280.54, dataPagamento: "30/12/2026", dataVencimento: "30/12/2026", status: "Realizado" },
-        { convenio: "BELMONTE", mes: "OUTUBRO", numeroNota: "", faturamento: 3950.00, impostos: 1086.25, valorLiquidoReceber: 2863.75, valorRecebido: 0, dataPagamento: "", dataVencimento: "30/11/2025", status: "Pendente" },
-        { convenio: "BELMONTE", mes: "NOVEMBRO", numeroNota: "", faturamento: 3950.00, impostos: 0, valorLiquidoReceber: 3950.00, valorRecebido: 0, dataPagamento: "", dataVencimento: "30/11/2025", status: "Pendente" },
-        { convenio: "SUS PORTO", mes: "OUTUBRO", numeroNota: "301", faturamento: 42850.00, impostos: 827.00, valorLiquidoReceber: 42023.00, valorRecebido: 40523.00, dataPagamento: "", dataVencimento: "31/10/2025", status: "Realizado" },
-        { convenio: "SUS PORTO", mes: "NOVEMBRO", numeroNota: "315", faturamento: 41400.00, impostos: 828.00, valorLiquidoReceber: 40572.00, valorRecebido: 40572.00, dataPagamento: "", dataVencimento: "30/11/2025", status: "Ralizado" },
-        { convenio: "GUARATINGA", mes: "OUTUBRO", numeroNota: "", faturamento: 5750.00, impostos: 1581.25, valorLiquidoReceber: 4168.75, valorRecebido: 0, dataPagamento: "", dataVencimento: "30/11/2025", status: "Pendente" },
-        { convenio: "GUARATINGA", mes: "NOVEMBRO", numeroNota: "", faturamento: 0.00, impostos: 0, valorLiquidoReceber: 0, valorRecebido: 0, dataPagamento: "", dataVencimento: "30/11/2025", status: "Pendente" },
-    ],
+ ],
     saidas: [
         { categoria: "Geral", valor: 51632.96, dataPagamento: "31/07/2025" },
         { categoria: "Geral", valor: 41336.52, dataPagamento: "31/08/2025" },
         { categoria: "Geral", valor: 51632.96, dataPagamento: "30/09/2025" },
-        { categoria: "Geral", valor: 51542.00, dataPagamento: "31/10/2025" },
-        { categoria: "Geral", valor: 56352.00, dataPagamento: "30/11/2025" },
     ]
 };
 
 // Função auxiliar para processar dados por mês
 const processarDadosPorMes = () => {
-    const meses = {}; A
+    const meses = {};A
 
     // Processar entradas
     fluxoCaixaData.entradas.forEach(entrada => {
