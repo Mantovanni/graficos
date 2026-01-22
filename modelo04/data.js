@@ -45,7 +45,7 @@ const fluxoCaixaData = {
 
 // Função auxiliar para processar dados por mês
 const processarDadosPorMes = () => {
-    const meses = {}; A
+    const meses = {};
 
     // Processar entradas
     fluxoCaixaData.entradas.forEach(entrada => {
