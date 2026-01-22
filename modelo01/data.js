@@ -112,8 +112,8 @@ const despesasData = {
     julho: { categoria: "Geral", valor: 51632.96, mes: "Julho" },
     agosto: { categoria: "Geral", valor: 41336.52, mes: "Agosto" },
     setembro: { categoria: "Geral", valor: 51632.96, mes: "Setembro" },
-    outubro: { categoria: "Geral", valor: 371954.26, mes: "Outubro" },
-    novembro: { categoria: "Geral", valor: 289830.14, mes: "Novembro" },
+    outubro: { categoria: "Geral", valor: 51542.00, mes: "Outubro" },
+    novembro: { categoria: "Geral", valor: 56352.00, mes: "Novembro" },
     dezembro: { categoria: "Geral", valor: 0, mes: "Dezembro" }
 };
 
